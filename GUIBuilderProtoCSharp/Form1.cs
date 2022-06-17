@@ -46,6 +46,7 @@ namespace GUIBuilderProtoCSharp
         public static Form1 f1;
         public static Form2 f2 = new Form2();
         public static Form3 f3 = new Form3();
+        public static Form consoleForm = new Form();
         TreeNode? selectedItem = null;
         public Form1()
         {
@@ -60,6 +61,17 @@ namespace GUIBuilderProtoCSharp
             f2.Location = new Point(200, 10);
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
+            
+            consoleForm.Show();
+            consoleForm.Location = new Point(f3.Location.X, f3.Location.Y + f3.Size.Height);
+            consoleForm.Size = new Size(600, 300);
+            consoleForm.Text = "ÉRÉìÉ\Å[Éã";
+            TextBox tb = new TextBox();
+            tb.Name = "debug";
+            tb.Dock = DockStyle.Fill;
+            tb.Enabled = false;
+            tb.Multiline = true;
+            consoleForm.Controls.Add(tb);
 
             treeView1.ExpandAll();
 

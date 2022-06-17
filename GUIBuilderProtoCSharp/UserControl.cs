@@ -11,19 +11,23 @@ namespace GUIBuilderProtoCSharp {
         private static bool resizing;
         private static bool pressing;
         private static Control? selecting;
+        private static Size originSize;
+        private static Point originLocation;
         private static String flag = "Default";
 
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
                 p_begin = new Point(e.X, e.Y); // コントロールの左上基準
                 selecting = (Control)sender;
+                originSize = selecting.Size;
+                originLocation = selecting.Location;
                 // System.Diagnostics.Debug.WriteLine($"({e.X}, {e.Y})");
             }
             pressing = true;
         }
         internal static void UserControl_MouseMove(object sender, MouseEventArgs e) {
             Point mouse = Form1.f2.PointToClient(Cursor.Position);// デザイナーウィンドウ左上基準
-                                                                  //System.Diagnostics.Debug.WriteLine($"(e.X    , e.Y    ) = ({e.X}, {e.Y})\n(mouse.X, mouse.Y) = ({mouse.X}, {mouse.Y})\n(p_begin.X, p_begin.Y) = ({p_begin.X}, {p_begin.Y})");
+            //System.Diagnostics.Debug.WriteLine($"(e.X    , e.Y    ) = ({e.X}, {e.Y})\n(mouse.X, mouse.Y) = ({mouse.X}, {mouse.Y})\n(p_begin.X, p_begin.Y) = ({p_begin.X}, {p_begin.Y})");
 
             Control t = (Control)sender;
             Control previewControl = Form1.f3.Controls.Find(t.Name, true)[0];
@@ -56,13 +60,22 @@ namespace GUIBuilderProtoCSharp {
 
 
             if (e.Button == MouseButtons.Left) {
-                Size originSize = t.Size;
                 Point p = new Point(t.Location.X, t.Location.Y);
                 if (flag == "NWSE" && !moving) {
                     if (-5 <= p_begin.X && p_begin.X <= 5 && -5 <= p_begin.Y && p_begin.Y <= 5) {
                         // 左上のサイズ変更
-                        t.Location = new Point(mouse.X, mouse.Y);
-                        t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
+                        if (selecting.Width > 0 && selecting.Height > 0) {
+                            t.Location = new Point(mouse.X, mouse.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
+                        } else if (selecting.Width <= 0) {
+                            // 右端がずれないようにする
+                            selecting.Width += 1;
+                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                        } else {
+                            // 下端がずれないようにする
+                            selecting.Height += 1;
+                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                        }
                     } else {
                         // 右下のサイズ変更
                         t.Size = new Size(mouse.X - p.X, mouse.Y - p.Y);
@@ -71,21 +84,37 @@ namespace GUIBuilderProtoCSharp {
                 } else if (flag == "NESW" && !moving) {
                     if (-5 + originSize.Width <= p_begin.X && p_begin.X <= 5 + originSize.Width && -5 <= p_begin.Y && p_begin.Y <= 5) {
                         // 右上のサイズ変更
-                        t.Location = new Point(p.X, mouse.Y);
-                        t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
-                        // t.Size = new Size(selecting.Width + p.X - mouse.X + selecting.Width, selecting.Height + p.Y - mouse.Y);// 修正する
+                        if (selecting.Height > 0) {
+                            t.Location = new Point(p.X, mouse.Y);
+                            t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
+                        } else {
+                            // 下端がずれないようにする
+                            selecting.Height += 1;
+                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                        }
                     } else {
                         // 左下のサイズ変更
-                        t.Location = new Point(mouse.X, p.Y);
-                        t.Size = new Size(mouse.X - p.X, mouse.Y - p.Y);//修正する
+                        if (selecting.Width > 0) {
+                            t.Location = new Point(mouse.X, p.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, mouse.Y - p.Y);
+                        } else {
+                            // 右端がずれないようにする
+                            selecting.Width += 1;
+                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                        }
                     }
-                    Form1.f1.toolStripStatusLabel1.Text = $"{t.Name}: {t.Size.Width} x {t.Size.Height}, 座標：({t.Location.X}, {t.Location.Y})";
                     resizing = true;
                 } else if (flag == "WE" && !moving) {
                     if (-5 <= p_begin.X && p_begin.X <= 5) {
                         // 左のサイズ変更
-                        t.Location = new Point(mouse.X, t.Location.Y);
-                        t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
+                        if (selecting.Width > 0) {
+                            t.Location = new Point(mouse.X, t.Location.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
+                        } else {
+                            // 右端がずれないようにする
+                            selecting.Width += 1;
+                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                        }
                     } else {
                         // 右のサイズ変更
                         t.Size = new Size(mouse.X - p.X, selecting.Height);
@@ -94,8 +123,14 @@ namespace GUIBuilderProtoCSharp {
                 } else if (flag == "NS" && !moving) {
                     if (-5 <= p_begin.Y && p_begin.Y <= 5) {
                         // 上のサイズ変更
-                        t.Location = new Point(t.Location.X, mouse.Y);
-                        t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
+                        if (selecting.Height > 0) {
+                            t.Location = new Point(t.Location.X, mouse.Y);
+                            t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
+                        } else {
+                            // 下端がずれないようにする
+                            selecting.Height += 1;
+                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                        }
                     } else {
                         // 下のサイズ変更
                         t.Size = new Size(selecting.Width, mouse.Y - p.Y);
@@ -112,6 +147,8 @@ namespace GUIBuilderProtoCSharp {
                 }
                 previewControl.Size = new Size((int)t.Size.Width, (int)t.Size.Height);
                 previewControl.Location = new Point(t.Location.X, t.Location.Y);
+                Form1.f1.toolStripStatusLabel1.Text = $"{t.Name}: {t.Size.Width} x {t.Size.Height}, 座標：({t.Location.X}, {t.Location.Y})";
+                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"p = ({p.X}, {p.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\nselecting = ({selecting.Location.X}. {selecting.Location.Y})\r\nmouse = ({mouse.X}, {mouse.Y})\r\n";
             }
         }
         internal static void UserControl_MouseEnter(object sender, EventArgs e) {
@@ -145,7 +182,7 @@ namespace GUIBuilderProtoCSharp {
                             break;
                         case UserCheckBox userCheckBox:
                             System.Diagnostics.Debug.WriteLine($"2: {userCheckBox.GetType().Name}");
-                            UserCheckBox.Number--;
+                            UserCheckBox.Count--;
                             break;
                         default:
                             break;
@@ -199,7 +236,7 @@ namespace GUIBuilderProtoCSharp {
 
         public UserButton() {
             // コンストラクタ
-            this.Name = $"{GetType().BaseType.Name}{++Number}";
+            this.Name = $"{GetType().BaseType.Name}{++Count}";
             this.Location = new Point(0, 0);
             this.Size = new Size(75, 23);
             this.TabIndex = 0;
@@ -217,7 +254,7 @@ namespace GUIBuilderProtoCSharp {
             for (int i = 0; i < UserButtons.Count; i++) {
                 // Nameが重複しないようにする処理
                 if (UserButtons[i] != null) {
-                    if (UserButtons[i].Name == $"{GetType().BaseType.Name}{Number}") {
+                    if (UserButtons[i].Name == $"{GetType().BaseType.Name}{Count}") {
 
                     }
                 } else {
@@ -244,7 +281,7 @@ namespace GUIBuilderProtoCSharp {
         /// <summary>
         /// デザインウィンドウに表示している個数
         /// </summary>
-        public static int Number {
+        public static int Count {
             get {
                 return num;
             }
@@ -254,7 +291,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public static void Delete(UserButton d) {
-            Number--;
+            Count--;
             foreach (var item in UserButton.UserButtons) {
                 if (item != null && item.Name == d.Name) {
                     UserButtons[UserButton.UserButtons.IndexOf(item)] = null;
@@ -288,7 +325,7 @@ namespace GUIBuilderProtoCSharp {
 
         public UserCheckBox() {
             // コンストラクタ
-            this.Name = $"CheckBox{++Number}";
+            this.Name = $"CheckBox{++Count}";
             this.Location = new Point(0, 0);
             this.Size = new Size(88, 19);
             this.TabIndex = 0;
@@ -313,7 +350,7 @@ namespace GUIBuilderProtoCSharp {
         /// <summary>
         /// デザインウィンドウに表示している個数
         /// </summary>
-        public static int Number {
+        public static int Count {
             get {
                 return num;
             }
