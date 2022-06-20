@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 namespace GUIBuilderProtoCSharp {
     internal class UserControl : Control {
         private static Point p_begin; // ドラッグ開始時のマウス座標(デザイナーウィンドウ左上基準)
+        private static bool l_click; // 左クリックしているときtrue
         private static bool moving; // コントロールを動かしているときtrue
         private static bool resizing;
         private static bool pressing;
+        private static bool shift; // Shiftキーを押しているときtrue
+        private static bool ctrl;
         private static Control? selecting;
         private static Size originSize;
         private static Point originLocation;
-        private static String flag = "Default";
+        private static string flag = "Default";
 
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
@@ -21,9 +24,9 @@ namespace GUIBuilderProtoCSharp {
                 selecting = (Control)sender;
                 originSize = selecting.Size;
                 originLocation = selecting.Location;
-                // System.Diagnostics.Debug.WriteLine($"({e.X}, {e.Y})");
+                System.Diagnostics.Debug.WriteLine($"({e.X}, {e.Y})");
+                pressing = true;
             }
-            pressing = true;
         }
         internal static void UserControl_MouseMove(object sender, MouseEventArgs e) {
             Point mouse = Form1.f2.PointToClient(Cursor.Position);// デザイナーウィンドウ左上基準
@@ -138,17 +141,27 @@ namespace GUIBuilderProtoCSharp {
                     resizing = true;
                 } else if (flag == "Default" && !resizing && p_begin.X >= 0 && p_begin.Y >= 0) {
                     // 選択したコントロールを動かす
-                    Point p_end = new Point(e.X - p_begin.X + t.Location.X, e.Y - p_begin.Y + t.Location.Y);
-                    t.Location = p_end;
-                    // previewControl.Location = p_end; // もう1つのウィンドウにもあるコントロールを動かす
+                    if (shift) {
+                        // Shiftキーが押されている間は、水平or垂直方向のみ移動できるようにする
+                        if (Math.Abs(mouse.X - originLocation.X) > Math.Abs(mouse.Y - originLocation.Y)) {
+                            t.Location = new Point(e.X - p_begin.X + t.Location.X, originLocation.Y);
+                        } else {
+                            t.Location = new Point(originLocation.X, e.Y - p_begin.Y + t.Location.Y);
+                        }
+                    } else {
+                        t.Location = new Point(e.X - p_begin.X + t.Location.X, e.Y - p_begin.Y + t.Location.Y);
+                    }
+                        (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"e = ({e.X}, {e.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
+                            $"Screen.originLocation = ({Form1.f2.PointToScreen(originLocation)}), Screen.tLocation = {Form1.f2.PointToScreen(t.Location)}\r\nmouse = ({mouse.X}, {mouse.Y})";
                     moving = true;
                 } else {
                     System.Diagnostics.Debug.WriteLine("Else");
                 }
-                previewControl.Size = new Size((int)t.Size.Width, (int)t.Size.Height);
-                previewControl.Location = new Point(t.Location.X, t.Location.Y);
+                previewControl.Size = new Size((int)t.Size.Width, (int)t.Size.Height); // もう1つのウィンドウにもあるコントロールのサイズを変える
+                previewControl.Location = new Point(t.Location.X, t.Location.Y); // もう1つのウィンドウにもあるコントロールを動かす
                 Form1.f1.toolStripStatusLabel1.Text = $"{t.Name}: {t.Size.Width} x {t.Size.Height}, 座標：({t.Location.X}, {t.Location.Y})";
-                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"p = ({p.X}, {p.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\nselecting = ({selecting.Location.X}. {selecting.Location.Y})\r\nmouse = ({mouse.X}, {mouse.Y})\r\n";
+                //(Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"p = ({p.X}, {p.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
+                //    $"selecting = ({selecting.Location.X}. {selecting.Location.Y})\r\nmouse = ({mouse.X}, {mouse.Y})\r\n e = ({e.X}, {e.Y})";
             }
         }
         internal static void UserControl_MouseEnter(object sender, EventArgs e) {
@@ -201,6 +214,10 @@ namespace GUIBuilderProtoCSharp {
                     resizing = false;
                     p_begin = new Point(-1, -1); // 左クリックしたままコントロールにカーソルが当たるとコントロールが移動するので、負の座標を与えて移動出来なくする
                     break;
+                case Keys.ShiftKey:
+                    // System.Diagnostics.Debug.WriteLine("Shift down");
+                    shift = true;
+                    break;
                 default:
                     break;
             }
@@ -227,6 +244,17 @@ namespace GUIBuilderProtoCSharp {
             Control previewControl = Form1.f3.Controls.Find(selecting.Name, true)[0];
             previewControl.Location = selecting.Location;
         }
+
+        internal static void UserControl_KeyUp(object sender, KeyEventArgs e) {
+            switch (e.KeyCode) {
+                case Keys.ShiftKey:
+                    // System.Diagnostics.Debug.WriteLine("Shift Up");
+                    shift = false;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 
@@ -250,6 +278,7 @@ namespace GUIBuilderProtoCSharp {
             this.MouseUp += UserControl.UserControl_MouseUp;
             this.KeyDown += UserControl.UserControl_KeyDown;
             this.PreviewKeyDown += UserControl.UserControl_PreviewKeyDown;
+            this.KeyUp += UserControl.UserControl_KeyUp;
 
             for (int i = 0; i < UserButtons.Count; i++) {
                 // Nameが重複しないようにする処理

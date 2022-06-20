@@ -28,31 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Button");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("CheckBox");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("CheckedListBox");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("ComboBox");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("DateTimePicker");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Label");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("ListBox");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("PictureBox");
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("ProgressBar");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("RadioButton");
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("RichTextBox");
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("TextBox");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("コントロール", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4,
-            treeNode5,
-            treeNode6,
-            treeNode7,
-            treeNode8,
-            treeNode9,
-            treeNode10,
-            treeNode11,
-            treeNode12});
+            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Button");
+            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("CheckBox");
+            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("CheckedListBox");
+            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("ComboBox");
+            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("DateTimePicker");
+            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Label");
+            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("ListBox");
+            System.Windows.Forms.TreeNode treeNode34 = new System.Windows.Forms.TreeNode("PictureBox");
+            System.Windows.Forms.TreeNode treeNode35 = new System.Windows.Forms.TreeNode("ProgressBar");
+            System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("RadioButton");
+            System.Windows.Forms.TreeNode treeNode37 = new System.Windows.Forms.TreeNode("RichTextBox");
+            System.Windows.Forms.TreeNode treeNode38 = new System.Windows.Forms.TreeNode("TextBox");
+            System.Windows.Forms.TreeNode treeNode39 = new System.Windows.Forms.TreeNode("コントロール", new System.Windows.Forms.TreeNode[] {
+            treeNode27,
+            treeNode28,
+            treeNode29,
+            treeNode30,
+            treeNode31,
+            treeNode32,
+            treeNode33,
+            treeNode34,
+            treeNode35,
+            treeNode36,
+            treeNode37,
+            treeNode38});
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -135,34 +135,34 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.Location = new System.Drawing.Point(0, 25);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "NodeButton";
-            treeNode1.Text = "Button";
-            treeNode2.Name = "NodeCheckBox";
-            treeNode2.Text = "CheckBox";
-            treeNode3.Name = "NodeCheckedListBox";
-            treeNode3.Text = "CheckedListBox";
-            treeNode4.Name = "NodeComboBox";
-            treeNode4.Text = "ComboBox";
-            treeNode5.Name = "NodeDateTimePicker";
-            treeNode5.Text = "DateTimePicker";
-            treeNode6.Name = "NodeLabel";
-            treeNode6.Text = "Label";
-            treeNode7.Name = "NodeListBox";
-            treeNode7.Text = "ListBox";
-            treeNode8.Name = "NodePictureBox";
-            treeNode8.Text = "PictureBox";
-            treeNode9.Name = "NodeProgressBar";
-            treeNode9.Text = "ProgressBar";
-            treeNode10.Name = "NodeRadioButton";
-            treeNode10.Text = "RadioButton";
-            treeNode11.Name = "NodeRichTextBox";
-            treeNode11.Text = "RichTextBox";
-            treeNode12.Name = "NodeTextBox";
-            treeNode12.Text = "TextBox";
-            treeNode13.Name = "RootNode";
-            treeNode13.Text = "コントロール";
+            treeNode27.Name = "NodeButton";
+            treeNode27.Text = "Button";
+            treeNode28.Name = "NodeCheckBox";
+            treeNode28.Text = "CheckBox";
+            treeNode29.Name = "NodeCheckedListBox";
+            treeNode29.Text = "CheckedListBox";
+            treeNode30.Name = "NodeComboBox";
+            treeNode30.Text = "ComboBox";
+            treeNode31.Name = "NodeDateTimePicker";
+            treeNode31.Text = "DateTimePicker";
+            treeNode32.Name = "NodeLabel";
+            treeNode32.Text = "Label";
+            treeNode33.Name = "NodeListBox";
+            treeNode33.Text = "ListBox";
+            treeNode34.Name = "NodePictureBox";
+            treeNode34.Text = "PictureBox";
+            treeNode35.Name = "NodeProgressBar";
+            treeNode35.Text = "ProgressBar";
+            treeNode36.Name = "NodeRadioButton";
+            treeNode36.Text = "RadioButton";
+            treeNode37.Name = "NodeRichTextBox";
+            treeNode37.Text = "RichTextBox";
+            treeNode38.Name = "NodeTextBox";
+            treeNode38.Text = "TextBox";
+            treeNode39.Name = "RootNode";
+            treeNode39.Text = "コントロール";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode13});
+            treeNode39});
             this.treeView1.Size = new System.Drawing.Size(143, 390);
             this.treeView1.TabIndex = 5;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
