@@ -18,6 +18,53 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
+        public static void Sync(Modify m, List<object> operations) {
+            Control? previewControl = null;
+            try {
+                previewControl = Form1.f3.Controls.Find(((Control)m.TargetControl).Name, true)[0]; // Formの数を複数扱う場合は、変える必要がある
+            } catch (IndexOutOfRangeException) {
+            }
+            foreach (var item in operations) {
+                switch (item) {
+                    case Point p:
+                        previewControl.Location = p;
+                        break;
+                    case Size s:
+                        previewControl.Size = s;
+                        break;
+                    case Control c:
+                        if (Form1.f3.Controls.Find(c.Name, true) != null) {
+                            Form1.f3.Controls.Add(c);
+                        } else {
+                            Form1.f3.Controls.Remove(c);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public static void Sync(Modify m, Modify.OperationCode op_code) {
+            switch (op_code) {
+                case Modify.OperationCode.Create:
+                    foreach (var item in m.After) {
+                    Form1.f3.Controls.Add((Control)item);
+                    }
+                    break;
+                case Modify.OperationCode.Modify:
+                    m.TargetForm.Controls.Find(((Control)m.TargetControl).Name, true);
+                    break;
+                case Modify.OperationCode.Delete:
+                    foreach (var item in m.After) {
+                    Form1.f3.Controls.Remove((Control)item);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
                 p_begin = new Point(e.X, e.Y); // コントロールの左上基準
@@ -174,14 +221,24 @@ namespace GUIBuilderProtoCSharp {
             }
         }
         internal static void UserControl_MouseUp(object sender, MouseEventArgs e) {
-            if (resizing) {
-
+            if (moving) {
+                List<object> before = new List<object> { originLocation };
+                List<object> after = new List<object> { ((Control)sender).Location };
+                Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
+                Form1.redo.Clear();
+            } else if (resizing) {
+                List<object> before = new List<object> { originSize };
+                List<object> after = new List<object> { ((Control)sender).Size };
+                Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
+                Form1.redo.Clear();
             }
+            Modify.Check(Form1.undo, Form1.redo);
             Form1.f1.Cursor = Cursors.Default;
             flag = "Default";
             moving = false;
             resizing = false;
             pressing = false;
+
         }
 
         internal static void UserControl_KeyDown(object sender, KeyEventArgs e) {
@@ -202,10 +259,13 @@ namespace GUIBuilderProtoCSharp {
                     }
                     Control previewControl = Form1.f3.Controls.Find(selecting.Name, true)[0];
                     Form1.f3.Controls.Remove(previewControl); // プレビューウィンドウのコントロールを削除
-                    previewControl.Dispose();
+                    // previewControl.Dispose();
+                    Form1.undo.Peek().After = new List<object> { previewControl };
                     Control designControl = Form1.f2.Controls.Find(selecting.Name, true)[0];
-                    Form1.f3.Controls.Remove(designControl); // デザインウィンドウのコントロールを削除
-                    designControl.Dispose();
+                    Form1.f2.Controls.Remove(designControl); // デザインウィンドウのコントロールを削除
+                    // designControl.Dispose();
+                    Form1.redo.Clear();
+                    Modify.Check(Form1.undo, Form1.redo);
                     selecting = Form1.f2.ActiveControl; // 選択中のコントロールを変える
 
                     Form1.f1.Cursor = Cursors.Default;
@@ -319,14 +379,35 @@ namespace GUIBuilderProtoCSharp {
             }
         }
 
+        public int Index {
+            get {
+                return UserButtons.IndexOf(this);
+                //for (int i = 0; i < UserButtons.Count; i++) {
+                //    if (UserButtons[i].Name == Name) {
+                //        return i;
+                //    }
+                //}
+                //return -1;
+            }
+            private set {
+                Index = value; ;
+            }
+        }
+
         public static void Delete(UserButton d) {
             Count--;
             foreach (var item in UserButton.UserButtons) {
                 if (item != null && item.Name == d.Name) {
-                    UserButtons[UserButton.UserButtons.IndexOf(item)] = null;
+                    List<object> before = new List<object>() { d.Index };
+                    Form1.undo.Push(new Modify(Modify.OperationCode.Delete, d, d.FindForm(), before, before));
+                    UserButtons[d.Index] = null;
                     break;
                 }
             }
+        }
+
+        public static void Add(UserButton d) {
+            Count++;
         }
 
         //private Point p_begin;

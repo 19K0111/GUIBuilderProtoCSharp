@@ -28,31 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Button");
-            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("CheckBox");
-            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("CheckedListBox");
-            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("ComboBox");
-            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("DateTimePicker");
-            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Label");
-            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("ListBox");
-            System.Windows.Forms.TreeNode treeNode34 = new System.Windows.Forms.TreeNode("PictureBox");
-            System.Windows.Forms.TreeNode treeNode35 = new System.Windows.Forms.TreeNode("ProgressBar");
-            System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("RadioButton");
-            System.Windows.Forms.TreeNode treeNode37 = new System.Windows.Forms.TreeNode("RichTextBox");
-            System.Windows.Forms.TreeNode treeNode38 = new System.Windows.Forms.TreeNode("TextBox");
-            System.Windows.Forms.TreeNode treeNode39 = new System.Windows.Forms.TreeNode("コントロール", new System.Windows.Forms.TreeNode[] {
-            treeNode27,
-            treeNode28,
-            treeNode29,
-            treeNode30,
-            treeNode31,
-            treeNode32,
-            treeNode33,
-            treeNode34,
-            treeNode35,
-            treeNode36,
-            treeNode37,
-            treeNode38});
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Button");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("CheckBox");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("CheckedListBox");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("ComboBox");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("DateTimePicker");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Label");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("ListBox");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("PictureBox");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("ProgressBar");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("RadioButton");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("RichTextBox");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("TextBox");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("コントロール", new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode5,
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9,
+            treeNode10,
+            treeNode11,
+            treeNode12});
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -100,8 +100,21 @@
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.undoToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.redoToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.printToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.printPreviewToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.menuStrip.SuspendLayout();
+            this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox1
@@ -133,37 +146,37 @@
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Location = new System.Drawing.Point(0, 25);
+            this.treeView1.Location = new System.Drawing.Point(0, 52);
             this.treeView1.Name = "treeView1";
-            treeNode27.Name = "NodeButton";
-            treeNode27.Text = "Button";
-            treeNode28.Name = "NodeCheckBox";
-            treeNode28.Text = "CheckBox";
-            treeNode29.Name = "NodeCheckedListBox";
-            treeNode29.Text = "CheckedListBox";
-            treeNode30.Name = "NodeComboBox";
-            treeNode30.Text = "ComboBox";
-            treeNode31.Name = "NodeDateTimePicker";
-            treeNode31.Text = "DateTimePicker";
-            treeNode32.Name = "NodeLabel";
-            treeNode32.Text = "Label";
-            treeNode33.Name = "NodeListBox";
-            treeNode33.Text = "ListBox";
-            treeNode34.Name = "NodePictureBox";
-            treeNode34.Text = "PictureBox";
-            treeNode35.Name = "NodeProgressBar";
-            treeNode35.Text = "ProgressBar";
-            treeNode36.Name = "NodeRadioButton";
-            treeNode36.Text = "RadioButton";
-            treeNode37.Name = "NodeRichTextBox";
-            treeNode37.Text = "RichTextBox";
-            treeNode38.Name = "NodeTextBox";
-            treeNode38.Text = "TextBox";
-            treeNode39.Name = "RootNode";
-            treeNode39.Text = "コントロール";
+            treeNode1.Name = "NodeButton";
+            treeNode1.Text = "Button";
+            treeNode2.Name = "NodeCheckBox";
+            treeNode2.Text = "CheckBox";
+            treeNode3.Name = "NodeCheckedListBox";
+            treeNode3.Text = "CheckedListBox";
+            treeNode4.Name = "NodeComboBox";
+            treeNode4.Text = "ComboBox";
+            treeNode5.Name = "NodeDateTimePicker";
+            treeNode5.Text = "DateTimePicker";
+            treeNode6.Name = "NodeLabel";
+            treeNode6.Text = "Label";
+            treeNode7.Name = "NodeListBox";
+            treeNode7.Text = "ListBox";
+            treeNode8.Name = "NodePictureBox";
+            treeNode8.Text = "PictureBox";
+            treeNode9.Name = "NodeProgressBar";
+            treeNode9.Text = "ProgressBar";
+            treeNode10.Name = "NodeRadioButton";
+            treeNode10.Text = "RadioButton";
+            treeNode11.Name = "NodeRichTextBox";
+            treeNode11.Text = "RichTextBox";
+            treeNode12.Name = "NodeTextBox";
+            treeNode12.Text = "TextBox";
+            treeNode13.Name = "RootNode";
+            treeNode13.Text = "コントロール";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode39});
-            this.treeView1.Size = new System.Drawing.Size(143, 390);
+            treeNode13});
+            this.treeView1.Size = new System.Drawing.Size(143, 363);
             this.treeView1.TabIndex = 5;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
@@ -332,21 +345,25 @@
             // 
             // undoToolStripMenuItem
             // 
+            this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("undoToolStripMenuItem.Image")));
             this.undoToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.undoToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.undoToolStripMenuItem.Text = "元に戻す(&U)";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
+            this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("redoToolStripMenuItem.Image")));
             this.redoToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.redoToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.redoToolStripMenuItem.Text = "やり直し(&R)";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
@@ -528,11 +545,123 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.aboutToolStripMenuItem.Text = "バージョン情報(&A)... ...";
             // 
+            // toolStrip
+            // 
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripButton,
+            this.openToolStripButton,
+            this.saveToolStripButton,
+            this.toolStripSeparator1,
+            this.undoToolStripButton,
+            this.redoToolStripButton,
+            this.toolStripSeparator9,
+            this.printToolStripButton,
+            this.printPreviewToolStripButton,
+            this.toolStripSeparator2,
+            this.helpToolStripButton});
+            this.toolStrip.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Size = new System.Drawing.Size(800, 25);
+            this.toolStrip.TabIndex = 11;
+            this.toolStrip.Text = "ToolStrip";
+            // 
+            // newToolStripButton
+            // 
+            this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
+            this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.newToolStripButton.Name = "newToolStripButton";
+            this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.newToolStripButton.Text = "新規";
+            // 
+            // openToolStripButton
+            // 
+            this.openToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
+            this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.openToolStripButton.Name = "openToolStripButton";
+            this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.openToolStripButton.Text = "開く";
+            // 
+            // saveToolStripButton
+            // 
+            this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
+            this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.saveToolStripButton.Name = "saveToolStripButton";
+            this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.saveToolStripButton.Text = "上書き保存";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // undoToolStripButton
+            // 
+            this.undoToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.undoToolStripButton.Enabled = false;
+            this.undoToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("undoToolStripButton.Image")));
+            this.undoToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.undoToolStripButton.Name = "undoToolStripButton";
+            this.undoToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.undoToolStripButton.Text = "toolStripButton1";
+            this.undoToolStripButton.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // redoToolStripButton
+            // 
+            this.redoToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.redoToolStripButton.Enabled = false;
+            this.redoToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("redoToolStripButton.Image")));
+            this.redoToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.redoToolStripButton.Name = "redoToolStripButton";
+            this.redoToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.redoToolStripButton.Text = "toolStripButton1";
+            this.redoToolStripButton.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+            // 
+            // printToolStripButton
+            // 
+            this.printToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.printToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("printToolStripButton.Image")));
+            this.printToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.printToolStripButton.Name = "printToolStripButton";
+            this.printToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.printToolStripButton.Text = "印刷";
+            // 
+            // printPreviewToolStripButton
+            // 
+            this.printPreviewToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.printPreviewToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripButton.Image")));
+            this.printPreviewToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.printPreviewToolStripButton.Name = "printPreviewToolStripButton";
+            this.printPreviewToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.printPreviewToolStripButton.Text = "印刷プレビュー";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // helpToolStripButton
+            // 
+            this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
+            this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.helpToolStripButton.Name = "helpToolStripButton";
+            this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.helpToolStripButton.Text = "ヘルプ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 440);
+            this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.treeView1);
@@ -545,6 +674,8 @@
             this.statusStrip1.PerformLayout();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.toolStrip.ResumeLayout(false);
+            this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -572,8 +703,6 @@
         private ToolStripSeparator toolStripSeparator5;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem editMenu;
-        private ToolStripMenuItem undoToolStripMenuItem;
-        private ToolStripMenuItem redoToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripMenuItem cutToolStripMenuItem;
         private ToolStripMenuItem copyToolStripMenuItem;
@@ -598,5 +727,19 @@
         private ToolStripMenuItem searchToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator8;
         private ToolStripMenuItem aboutToolStripMenuItem;
+        private ToolStrip toolStrip;
+        private ToolStripButton newToolStripButton;
+        private ToolStripButton openToolStripButton;
+        private ToolStripButton saveToolStripButton;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton printToolStripButton;
+        private ToolStripButton printPreviewToolStripButton;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton helpToolStripButton;
+        private ToolStripSeparator toolStripSeparator9;
+        internal ToolStripMenuItem undoToolStripMenuItem;
+        internal ToolStripMenuItem redoToolStripMenuItem;
+        internal ToolStripButton undoToolStripButton;
+        internal ToolStripButton redoToolStripButton;
     }
 }

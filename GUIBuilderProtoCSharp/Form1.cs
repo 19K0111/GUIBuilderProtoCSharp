@@ -1,7 +1,5 @@
-namespace GUIBuilderProtoCSharp
-{
-    public partial class Form1 : Form
-    {
+namespace GUIBuilderProtoCSharp {
+    public partial class Form1 : Form {
         /*
             Button
             CheckBox
@@ -47,21 +45,22 @@ namespace GUIBuilderProtoCSharp
         public static Form2 f2 = new Form2();
         public static Form3 f3 = new Form3();
         public static Form consoleForm = new Form();
+
+        internal static Stack<Modify> redo = new Stack<Modify>(); // [Ctrl] + [Y]
+        internal static Stack<Modify> undo = new Stack<Modify>(); // [Ctrl] + [Z]
         TreeNode? selectedItem = null;
-        public Form1()
-        {
+        public Form1() {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e) {
             f1 = this;
             f2.MdiParent = this;
             f2.Show();
             f2.Location = new Point(200, 10);
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
-            
+
             consoleForm.Show();
             consoleForm.Location = new Point(f3.Location.X, f3.Location.Y + f3.Size.Height);
             consoleForm.Size = new Size(600, 300);
@@ -78,11 +77,13 @@ namespace GUIBuilderProtoCSharp
             toolStripStatusLabel1.Text = $"サイズ：{f2.Size.Width} x {f2.Size.Height}";
         }
 
-        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e) {
             System.Diagnostics.Debug.WriteLine(selectedItem.Text);
-            switch (selectedItem.Text)
-            {
+            Create(selectedItem.Text);
+        }
+
+        public void Create(string type) {
+            switch (type) {
                 case "コントロール":
                     break;
                 case "Button":
@@ -145,15 +146,21 @@ namespace GUIBuilderProtoCSharp
             }
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e) {
             selectedItem = treeView1.SelectedNode;
         }
 
 
-        private void beginDrag(object sender, EventArgs e)
-        {
+        private void beginDrag(object sender, EventArgs e) {
 
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
+            Modify.Undo(undo, redo);
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e) {
+            Modify.Redo(redo, undo);
         }
     }
 }
