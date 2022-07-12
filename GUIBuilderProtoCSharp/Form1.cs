@@ -83,6 +83,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public void Create(string type) {
+            redo.Clear();
             switch (type) {
                 case "コントロール":
                     break;
@@ -97,6 +98,8 @@ namespace GUIBuilderProtoCSharp {
                     UserButtons.Add(ub);
                     ub.BringToFront();
                     ub2.BringToFront();
+                    List<object> before = new List<object>() { ub.Index};
+                    undo.Push(new Modify(Modify.OperationCode.Create, ub, ub.FindForm(), before, before));
                     break;
                 case "CheckBox":
                     NumCheckBox++;
@@ -144,6 +147,7 @@ namespace GUIBuilderProtoCSharp {
                 default:
                     throw new Exception("存在しないコントロール");
             }
+            Modify.Check(undo, redo);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e) {

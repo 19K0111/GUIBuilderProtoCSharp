@@ -18,6 +18,10 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
+        public static Control FindPreview(Control design) {
+            return Form1.f3.Controls.Find(design.Name, true)[0];
+        }
+
         public static void Sync(Modify m, List<object> operations) {
             Control? previewControl = null;
             try {
@@ -49,16 +53,17 @@ namespace GUIBuilderProtoCSharp {
             switch (op_code) {
                 case Modify.OperationCode.Create:
                     foreach (var item in m.After) {
-                    Form1.f3.Controls.Add((Control)item);
+                        Form1.f3.Controls.Add((Control)m.PreviewControl);
                     }
                     break;
                 case Modify.OperationCode.Modify:
                     m.TargetForm.Controls.Find(((Control)m.TargetControl).Name, true);
                     break;
                 case Modify.OperationCode.Delete:
-                    foreach (var item in m.After) {
-                    Form1.f3.Controls.Remove((Control)item);
-                    }
+                    Form1.f3.Controls.Remove(Form1.f3.Controls.Find(((Control)m.TargetControl).Name, true)[0]);
+                    //foreach (var item in m.After) {
+                    //Form1.f3.Controls.Remove((Control)item);
+                    //}
                     break;
                 default:
                     break;
@@ -248,6 +253,8 @@ namespace GUIBuilderProtoCSharp {
                     switch (selecting) { // 各GUI部品によって個数を減らす処理
                         case UserButton userButton:
                             System.Diagnostics.Debug.WriteLine($"1: {userButton.GetType().Name}");
+                            List<object> before = new List<object>() { userButton.Index };
+                            Form1.undo.Push(new Modify(Modify.OperationCode.Delete, userButton, userButton.FindForm(), before, before));
                             UserButton.Delete(userButton);
                             break;
                         case UserCheckBox userCheckBox:
@@ -398,8 +405,6 @@ namespace GUIBuilderProtoCSharp {
             Count--;
             foreach (var item in UserButton.UserButtons) {
                 if (item != null && item.Name == d.Name) {
-                    List<object> before = new List<object>() { d.Index };
-                    Form1.undo.Push(new Modify(Modify.OperationCode.Delete, d, d.FindForm(), before, before));
                     UserButtons[d.Index] = null;
                     break;
                 }

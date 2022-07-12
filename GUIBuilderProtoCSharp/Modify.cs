@@ -20,6 +20,12 @@ namespace GUIBuilderProtoCSharp {
             get; set;
         }
         /// <summary>
+        /// プレビューウィンドウのコントロール
+        /// </summary>
+        public object PreviewControl {
+            get; set;
+        }
+        /// <summary>
         /// コントロールの名前
         /// </summary>
         public string ClassName {
@@ -55,6 +61,7 @@ namespace GUIBuilderProtoCSharp {
             ClassName = control.GetType().Name;
             Operation = operation;
             TargetControl = control;
+            PreviewControl = UserControl.FindPreview((Control)control);
             TargetForm = parentForm;
             Before = before;
             After = after;
@@ -127,7 +134,7 @@ namespace GUIBuilderProtoCSharp {
                 case OperationCode.Delete:
                     switch (m.TargetControl) {
                         case UserButton userButton:
-                            UserButton.UserButtons[(int)m.Before[0]] = null;
+                            UserButton.Delete(userButton);
                             m.TargetForm.Controls.Remove((Control)m.TargetControl);
                             UserControl.Sync(m, op_code);
                             break;
@@ -170,7 +177,7 @@ namespace GUIBuilderProtoCSharp {
                 Form1.f1.undoToolStripMenuItem.Enabled = true;
                 Form1.f1.undoToolStripButton.Enabled = true;
             }
-            if(redoStack.Count == 0) {
+            if (redoStack.Count == 0) {
                 Form1.f1.redoToolStripMenuItem.Enabled = false;
                 Form1.f1.redoToolStripButton.Enabled = false;
             } else {
