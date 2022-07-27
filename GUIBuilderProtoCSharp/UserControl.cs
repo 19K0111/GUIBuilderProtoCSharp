@@ -18,6 +18,16 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
+        public static void init() {
+            l_click = false; // 左クリックしているときtrue
+            moving = false; // コントロールを動かしているときtrue
+            resizing = false;
+            pressing = false;
+            shift = false; // Shiftキーを押しているときtrue
+            ctrl = false;
+            selecting = null;
+            UserButton.UserButtons.Clear();
+        }
         public static Control FindPreview(Control design) {
             return Form1.f3.Controls.Find(design.Name, true)[0];
         }
@@ -54,6 +64,7 @@ namespace GUIBuilderProtoCSharp {
                 case Modify.OperationCode.Create:
                     foreach (var item in m.After) {
                         Form1.f3.Controls.Add((Control)m.PreviewControl);
+                        ((Control)m.PreviewControl).BringToFront();
                     }
                     break;
                 case Modify.OperationCode.Modify:
@@ -89,131 +100,132 @@ namespace GUIBuilderProtoCSharp {
             //System.Diagnostics.Debug.WriteLine(t.Size);
             //System.Diagnostics.Debug.WriteLine(t.Location);
 
-
-            if (!moving && !pressing) {
-                if ((mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) ||
-                    (mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5)) {
-                    Form1.f1.Cursor = Cursors.SizeNWSE; // 左上右下カーソル
-                    flag = "NWSE";
-                } else if ((mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) ||
-                       (mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5)) {
-                    Form1.f1.Cursor = Cursors.SizeNESW; // 左下右上カーソル
-                    flag = "NESW";
-                } else if (((mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) || (mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5))
-                      && (t.Location.Y <= mouse.Y && mouse.Y <= t.Location.Y + t.Size.Height)) {
-                    Form1.f1.Cursor = Cursors.SizeWE; // 横に広げるカーソル
-                    flag = "WE";
-                } else if (((mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) || (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5))
-                      && (t.Location.X <= mouse.X && mouse.X <= t.Location.X + t.Size.Width)) {
-                    Form1.f1.Cursor = Cursors.SizeNS; // 縦に広げるカーソル
-                    flag = "NS";
-                } else if (!resizing) {
-                    Form1.f1.Cursor = Cursors.Default;
-                    flag = "Default";
+            if (selecting != null) {
+                if (!moving && !pressing) {
+                    if ((mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) ||
+                        (mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5)) {
+                        Form1.f1.Cursor = Cursors.SizeNWSE; // 左上右下カーソル
+                        flag = "NWSE";
+                    } else if ((mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) ||
+                           (mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) && (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5)) {
+                        Form1.f1.Cursor = Cursors.SizeNESW; // 左下右上カーソル
+                        flag = "NESW";
+                    } else if (((mouse.X - 5 <= t.Location.X && t.Location.X <= mouse.X + 5) || (mouse.X - 5 <= t.Location.X + t.Size.Width && t.Location.X + t.Size.Width <= mouse.X + 5))
+                          && (t.Location.Y <= mouse.Y && mouse.Y <= t.Location.Y + t.Size.Height)) {
+                        Form1.f1.Cursor = Cursors.SizeWE; // 横に広げるカーソル
+                        flag = "WE";
+                    } else if (((mouse.Y - 5 <= t.Location.Y && t.Location.Y <= mouse.Y + 5) || (mouse.Y - 5 <= t.Location.Y + t.Size.Height && t.Location.Y + t.Size.Height <= mouse.Y + 5))
+                          && (t.Location.X <= mouse.X && mouse.X <= t.Location.X + t.Size.Width)) {
+                        Form1.f1.Cursor = Cursors.SizeNS; // 縦に広げるカーソル
+                        flag = "NS";
+                    } else if (!resizing) {
+                        Form1.f1.Cursor = Cursors.Default;
+                        flag = "Default";
+                    }
                 }
-            }
 
 
-            if (e.Button == MouseButtons.Left) {
-                Point p = new Point(t.Location.X, t.Location.Y);
-                if (flag == "NWSE" && !moving) {
-                    if (-5 <= p_begin.X && p_begin.X <= 5 && -5 <= p_begin.Y && p_begin.Y <= 5) {
-                        // 左上のサイズ変更
-                        if (selecting.Width > 0 && selecting.Height > 0) {
-                            t.Location = new Point(mouse.X, mouse.Y);
-                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
-                        } else if (selecting.Width <= 0) {
-                            // 右端がずれないようにする
-                            selecting.Width += 1;
-                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                if (e.Button == MouseButtons.Left) {
+                    Point p = new Point(t.Location.X, t.Location.Y);
+                    if (flag == "NWSE" && !moving) {
+                        if (-5 <= p_begin.X && p_begin.X <= 5 && -5 <= p_begin.Y && p_begin.Y <= 5) {
+                            // 左上のサイズ変更
+                            if (selecting.Width > 0 && selecting.Height > 0) {
+                                t.Location = new Point(mouse.X, mouse.Y);
+                                t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
+                            } else if (selecting.Width <= 0) {
+                                // 右端がずれないようにする
+                                selecting.Width += 1;
+                                t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                            } else {
+                                // 下端がずれないようにする
+                                selecting.Height += 1;
+                                t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                            }
                         } else {
-                            // 下端がずれないようにする
-                            selecting.Height += 1;
-                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                            // 右下のサイズ変更
+                            t.Size = new Size(mouse.X - p.X, mouse.Y - p.Y);
                         }
+                        resizing = true;
+                    } else if (flag == "NESW" && !moving) {
+                        if (-5 + originSize.Width <= p_begin.X && p_begin.X <= 5 + originSize.Width && -5 <= p_begin.Y && p_begin.Y <= 5) {
+                            // 右上のサイズ変更
+                            if (selecting.Height > 0) {
+                                t.Location = new Point(p.X, mouse.Y);
+                                t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
+                            } else {
+                                // 下端がずれないようにする
+                                selecting.Height += 1;
+                                t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                            }
+                        } else {
+                            // 左下のサイズ変更
+                            if (selecting.Width > 0) {
+                                t.Location = new Point(mouse.X, p.Y);
+                                t.Size = new Size(selecting.Width + p.X - mouse.X, mouse.Y - p.Y);
+                            } else {
+                                // 右端がずれないようにする
+                                selecting.Width += 1;
+                                t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                            }
+                        }
+                        resizing = true;
+                    } else if (flag == "WE" && !moving) {
+                        if (-5 <= p_begin.X && p_begin.X <= 5) {
+                            // 左のサイズ変更
+                            if (selecting.Width > 0) {
+                                t.Location = new Point(mouse.X, t.Location.Y);
+                                t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
+                            } else {
+                                // 右端がずれないようにする
+                                selecting.Width += 1;
+                                t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                            }
+                        } else {
+                            // 右のサイズ変更
+                            t.Size = new Size(mouse.X - p.X, selecting.Height);
+                        }
+                        resizing = true;
+                    } else if (flag == "NS" && !moving) {
+                        if (-5 <= p_begin.Y && p_begin.Y <= 5) {
+                            // 上のサイズ変更
+                            if (selecting.Height > 0) {
+                                t.Location = new Point(t.Location.X, mouse.Y);
+                                t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
+                            } else {
+                                // 下端がずれないようにする
+                                selecting.Height += 1;
+                                t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
+                            }
+                        } else {
+                            // 下のサイズ変更
+                            t.Size = new Size(selecting.Width, mouse.Y - p.Y);
+                        }
+                        resizing = true;
+                    } else if (flag == "Default" && !resizing && p_begin.X >= 0 && p_begin.Y >= 0) {
+                        // 選択したコントロールを動かす
+                        if (shift) {
+                            // Shiftキーが押されている間は、水平or垂直方向のみ移動できるようにする
+                            if (Math.Abs(mouse.X - originLocation.X) > Math.Abs(mouse.Y - originLocation.Y)) {
+                                t.Location = new Point(e.X - p_begin.X + t.Location.X, originLocation.Y);
+                            } else {
+                                t.Location = new Point(originLocation.X, e.Y - p_begin.Y + t.Location.Y);
+                            }
+                        } else {
+                            t.Location = new Point(e.X - p_begin.X + t.Location.X, e.Y - p_begin.Y + t.Location.Y);
+                        }
+                            (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"e = ({e.X}, {e.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
+                                $"Screen.originLocation = ({Form1.f2.PointToScreen(originLocation)}), Screen.tLocation = {Form1.f2.PointToScreen(t.Location)}\r\nmouse = ({mouse.X}, {mouse.Y})";
+                        moving = true;
                     } else {
-                        // 右下のサイズ変更
-                        t.Size = new Size(mouse.X - p.X, mouse.Y - p.Y);
+                        System.Diagnostics.Debug.WriteLine("Else");
                     }
-                    resizing = true;
-                } else if (flag == "NESW" && !moving) {
-                    if (-5 + originSize.Width <= p_begin.X && p_begin.X <= 5 + originSize.Width && -5 <= p_begin.Y && p_begin.Y <= 5) {
-                        // 右上のサイズ変更
-                        if (selecting.Height > 0) {
-                            t.Location = new Point(p.X, mouse.Y);
-                            t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
-                        } else {
-                            // 下端がずれないようにする
-                            selecting.Height += 1;
-                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
-                        }
-                    } else {
-                        // 左下のサイズ変更
-                        if (selecting.Width > 0) {
-                            t.Location = new Point(mouse.X, p.Y);
-                            t.Size = new Size(selecting.Width + p.X - mouse.X, mouse.Y - p.Y);
-                        } else {
-                            // 右端がずれないようにする
-                            selecting.Width += 1;
-                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
-                        }
-                    }
-                    resizing = true;
-                } else if (flag == "WE" && !moving) {
-                    if (-5 <= p_begin.X && p_begin.X <= 5) {
-                        // 左のサイズ変更
-                        if (selecting.Width > 0) {
-                            t.Location = new Point(mouse.X, t.Location.Y);
-                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
-                        } else {
-                            // 右端がずれないようにする
-                            selecting.Width += 1;
-                            t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
-                        }
-                    } else {
-                        // 右のサイズ変更
-                        t.Size = new Size(mouse.X - p.X, selecting.Height);
-                    }
-                    resizing = true;
-                } else if (flag == "NS" && !moving) {
-                    if (-5 <= p_begin.Y && p_begin.Y <= 5) {
-                        // 上のサイズ変更
-                        if (selecting.Height > 0) {
-                            t.Location = new Point(t.Location.X, mouse.Y);
-                            t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
-                        } else {
-                            // 下端がずれないようにする
-                            selecting.Height += 1;
-                            t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
-                        }
-                    } else {
-                        // 下のサイズ変更
-                        t.Size = new Size(selecting.Width, mouse.Y - p.Y);
-                    }
-                    resizing = true;
-                } else if (flag == "Default" && !resizing && p_begin.X >= 0 && p_begin.Y >= 0) {
-                    // 選択したコントロールを動かす
-                    if (shift) {
-                        // Shiftキーが押されている間は、水平or垂直方向のみ移動できるようにする
-                        if (Math.Abs(mouse.X - originLocation.X) > Math.Abs(mouse.Y - originLocation.Y)) {
-                            t.Location = new Point(e.X - p_begin.X + t.Location.X, originLocation.Y);
-                        } else {
-                            t.Location = new Point(originLocation.X, e.Y - p_begin.Y + t.Location.Y);
-                        }
-                    } else {
-                        t.Location = new Point(e.X - p_begin.X + t.Location.X, e.Y - p_begin.Y + t.Location.Y);
-                    }
-                        (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"e = ({e.X}, {e.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
-                            $"Screen.originLocation = ({Form1.f2.PointToScreen(originLocation)}), Screen.tLocation = {Form1.f2.PointToScreen(t.Location)}\r\nmouse = ({mouse.X}, {mouse.Y})";
-                    moving = true;
-                } else {
-                    System.Diagnostics.Debug.WriteLine("Else");
+                    previewControl.Size = new Size((int)t.Size.Width, (int)t.Size.Height); // もう1つのウィンドウにもあるコントロールのサイズを変える
+                    previewControl.Location = new Point(t.Location.X, t.Location.Y); // もう1つのウィンドウにもあるコントロールを動かす
+                    Form1.f1.toolStripStatusLabel1.Text = $"{t.Name}: {t.Size.Width} x {t.Size.Height}, 座標：({t.Location.X}, {t.Location.Y})";
+                    //(Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"p = ({p.X}, {p.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
+                    //    $"selecting = ({selecting.Location.X}. {selecting.Location.Y})\r\nmouse = ({mouse.X}, {mouse.Y})\r\n e = ({e.X}, {e.Y})";
                 }
-                previewControl.Size = new Size((int)t.Size.Width, (int)t.Size.Height); // もう1つのウィンドウにもあるコントロールのサイズを変える
-                previewControl.Location = new Point(t.Location.X, t.Location.Y); // もう1つのウィンドウにもあるコントロールを動かす
-                Form1.f1.toolStripStatusLabel1.Text = $"{t.Name}: {t.Size.Width} x {t.Size.Height}, 座標：({t.Location.X}, {t.Location.Y})";
-                //(Form1.consoleForm.Controls.Find("debug", true)[0]).Text = $"p = ({p.X}, {p.Y})\r\np_begin = ({p_begin.X}, {p_begin.Y})\r\n" +
-                //    $"selecting = ({selecting.Location.X}. {selecting.Location.Y})\r\nmouse = ({mouse.X}, {mouse.Y})\r\n e = ({e.X}, {e.Y})";
             }
         }
         internal static void UserControl_MouseEnter(object sender, EventArgs e) {
@@ -308,8 +320,13 @@ namespace GUIBuilderProtoCSharp {
                 default:
                     break;
             }
-            Control previewControl = Form1.f3.Controls.Find(selecting.Name, true)[0];
-            previewControl.Location = selecting.Location;
+            try {
+                Control previewControl = Form1.f3.Controls.Find(selecting.Name, true)[0];
+                previewControl.Location = selecting.Location;
+            } catch (IndexOutOfRangeException ex) {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Form1.consoleForm.Controls.Find("debug", true)[0].Text = ex.Message;
+            }
         }
 
         internal static void UserControl_KeyUp(object sender, KeyEventArgs e) {
@@ -326,12 +343,12 @@ namespace GUIBuilderProtoCSharp {
 
 
     internal class UserButton : Button {
-        static int num = 0;
+        //static int num = 0;
         internal static List<UserButton>? UserButtons = new List<UserButton>();
 
         public UserButton() {
             // コンストラクタ
-            this.Name = $"{GetType().BaseType.Name}{++Count}";
+            this.Name = $"{GetType().BaseType.Name}{Count + 1}";
             this.Location = new Point(0, 0);
             this.Size = new Size(75, 23);
             this.TabIndex = 0;
@@ -379,11 +396,11 @@ namespace GUIBuilderProtoCSharp {
         /// </summary>
         public static int Count {
             get {
-                return num;
+                return UserButtons.Count;
             }
-            private set {
-                num = value;
-            }
+            //private set {
+            //    num = value;
+            //}
         }
 
         public int Index {
@@ -402,7 +419,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public static void Delete(UserButton d) {
-            Count--;
+            //Count--;
             foreach (var item in UserButton.UserButtons) {
                 if (item != null && item.Name == d.Name) {
                     UserButtons[d.Index] = null;
@@ -412,7 +429,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public static void Add(UserButton d) {
-            Count++;
+            //Count++;
         }
 
         //private Point p_begin;

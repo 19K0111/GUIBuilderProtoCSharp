@@ -120,6 +120,7 @@ namespace GUIBuilderProtoCSharp {
                     switch (m.TargetControl) {
                         case UserButton userButton:
                             UserButton.Add(userButton);
+                            userButton.BringToFront();
                             UserButton.UserButtons[(int)m.Before[0]] = userButton;
                             List<object> op = new List<object> { op_code };
                             UserControl.Sync(m, op_code);

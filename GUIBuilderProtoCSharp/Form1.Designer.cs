@@ -112,6 +112,7 @@
             this.printPreviewToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.statusStrip1.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -146,6 +147,7 @@
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.treeView1.Enabled = false;
             this.treeView1.Location = new System.Drawing.Point(0, 52);
             this.treeView1.Name = "treeView1";
             treeNode1.Name = "NodeButton";
@@ -259,6 +261,7 @@
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.newToolStripMenuItem.Text = "新規作成(&N)";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -268,6 +271,7 @@
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.openToolStripMenuItem.Text = "開く(&O)";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -282,6 +286,7 @@
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.saveToolStripMenuItem.Text = "保存(&S)";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -573,6 +578,7 @@
             this.newToolStripButton.Name = "newToolStripButton";
             this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.newToolStripButton.Text = "新規";
+            this.newToolStripButton.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripButton
             // 
@@ -582,6 +588,7 @@
             this.openToolStripButton.Name = "openToolStripButton";
             this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.openToolStripButton.Text = "開く";
+            this.openToolStripButton.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripButton
             // 
@@ -591,6 +598,7 @@
             this.saveToolStripButton.Name = "saveToolStripButton";
             this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.saveToolStripButton.Text = "上書き保存";
+            this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -605,7 +613,7 @@
             this.undoToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.undoToolStripButton.Name = "undoToolStripButton";
             this.undoToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.undoToolStripButton.Text = "toolStripButton1";
+            this.undoToolStripButton.Text = "元に戻す";
             this.undoToolStripButton.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripButton
@@ -616,7 +624,7 @@
             this.redoToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.redoToolStripButton.Name = "redoToolStripButton";
             this.redoToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.redoToolStripButton.Text = "toolStripButton1";
+            this.redoToolStripButton.Text = "やり直し";
             this.redoToolStripButton.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
@@ -655,6 +663,10 @@
             this.helpToolStripButton.Name = "helpToolStripButton";
             this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.helpToolStripButton.Text = "ヘルプ";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = "プロジェクトファイル|*.proj";
             // 
             // Form1
             // 
@@ -741,5 +753,6 @@
         internal ToolStripMenuItem redoToolStripMenuItem;
         internal ToolStripButton undoToolStripButton;
         internal ToolStripButton redoToolStripButton;
+        private OpenFileDialog openFileDialog1;
     }
 }
