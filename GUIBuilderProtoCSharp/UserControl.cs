@@ -18,6 +18,8 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
+        //internal static List<object> UserControls = new List<object>();
+
         public static void init() {
             l_click = false; // 左クリックしているときtrue
             moving = false; // コントロールを動かしているときtrue
@@ -389,6 +391,17 @@ namespace GUIBuilderProtoCSharp {
             this.TabIndex = t.TabIndex;
             this.Text = t.Text;
             this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+
+            this.Click += UserButton_Click;
+        }
+
+        private void UserButton_Click(object? sender, EventArgs e) {
+            Console.WriteLine("Clicked: " + this.Name);
+            try {
+                Interpreter.EventList.Do(this.Name + ".Click");
+            } catch (Exception ex) {
+                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
+            }
         }
 
         /// <summary>
@@ -466,7 +479,6 @@ namespace GUIBuilderProtoCSharp {
 
             this.MouseDown += UserControl.UserControl_MouseDown;
             this.MouseMove += UserControl.UserControl_MouseMove;
-            ;
         }
 
         public UserCheckBox(UserCheckBox t) {

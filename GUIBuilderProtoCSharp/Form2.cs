@@ -21,7 +21,7 @@ namespace GUIBuilderProtoCSharp
         private void Form2_LocationChanged(object sender, EventArgs e)
         {
             // System.Diagnostics.Debug.WriteLine($"Location: ({this.Location.X}, {this.Location.Y})");
-            if (this.Location.X < 140) Location = new Point(140, this.Location.Y);
+            if (this.Location.X < 0) Location = new Point(0, this.Location.Y);
             if (this.Location.Y < 0) Location = new Point(this.Location.X, 0);
         }
 

@@ -49,7 +49,7 @@ namespace GUIBuilderProtoCSharp {
             textBox1.Text = "";
             textBox2.Text = "";
             button2.Enabled = false;
-            Form1.f1.init();
+            Form1.f1.Init();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e) {

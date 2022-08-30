@@ -44,8 +44,13 @@ namespace GUIBuilderProtoCSharp {
         public static Form1 f1;
         public static Form2 f2 = new Form2();
         public static Form3 f3 = new Form3();
+        public static Form4 f4 = new Form4();
         public static NewProjectDialog newProjectDialog = new NewProjectDialog();
         public static Form consoleForm = new Form();
+
+        public const string DESIGNER = "デザイナー";
+        public const string CONSOLE = "コンソール";
+        public const string CODE_EDITOR = "コードエディタ";
 
         internal static ProjectJson pj;
         public static string workingDirectory = "";
@@ -57,7 +62,7 @@ namespace GUIBuilderProtoCSharp {
             InitializeComponent();
         }
 
-        public void init() {
+        public void Init() {
             NumButton = 0;
             NumCheckBox = 0;
             NumCheckedListBox = 0;
@@ -89,7 +94,10 @@ namespace GUIBuilderProtoCSharp {
             f2.Location = new Point(200, 10);
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
+            f4.Show();
             treeView1.Enabled = true;
+            saveAsToolStripMenuItem.Enabled = true;
+            reloadToolStripButton.Enabled = true;
 
             undo.Clear();
             redo.Clear();
@@ -97,8 +105,14 @@ namespace GUIBuilderProtoCSharp {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            // CharReader.Main_cr();
+            // Interpreter.Lang.Main_Lang();
+            // HSMAssembler.Main_asm();
+
             f1 = this;
-            //init();
+            //Init();
+
+            //UserControl.UserControls.Add(UserButton.UserButtons);
 
             consoleForm.Show();
             consoleForm.Location = new Point(f3.Location.X, f3.Location.Y + f3.Size.Height);
@@ -128,11 +142,12 @@ namespace GUIBuilderProtoCSharp {
                     break;
                 case nameof(Button):
                     NumButton++;
-                    System.Diagnostics.Debug.WriteLine($"create Button{UserButton.Count+1}");
+                    System.Diagnostics.Debug.WriteLine($"create Button{UserButton.Count + 1}");
                     UserButton ub = new UserButton();
                     f2.Controls.Add(ub);
                     UserButton ub2 = new UserButton(ub);
                     f3.Controls.Add(ub2);
+
                     // ub2 = PropertyCopier.CopyTo(ub, ub2);
                     UserButtons.Add(ub);
                     ub.BringToFront();
@@ -213,7 +228,7 @@ namespace GUIBuilderProtoCSharp {
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
                 Form1.workingDirectory = Path.GetDirectoryName(openFileDialog1.FileName);
-                Form1.f1.init();
+                Form1.f1.Init();
                 StreamReader sr = new StreamReader(openFileDialog1.FileName);
                 string jsonString = sr.ReadToEnd();
                 pj = System.Text.Json.JsonSerializer.Deserialize<ProjectJson>(jsonString, ProjectJson.options);
@@ -223,51 +238,7 @@ namespace GUIBuilderProtoCSharp {
                 sr.Close();
 
                 // デザインファイル読み込み
-                sr = new StreamReader(Form1.workingDirectory + "\\" + pj.Designer[0]);
-                jsonString = sr.ReadToEnd();
-                DesignJson dj = System.Text.Json.JsonSerializer.Deserialize<DesignJson>(jsonString, ProjectJson.options);
-                f2.Name = dj.Name;
-                f2.Text = dj.Text;
-                f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
-                foreach (var item in dj.Controls) {
-                    switch (item.Type) {
-                        case nameof(UserButton):
-                            UserButton ub = new UserButton();
-                            // 一度Control型でプロパティを設定し、あとでUserButton等にキャストする方法を試す
-                            //ub.Anchor = (AnchorStyles)Enum.Parse(typeof(AnchorStyles), item.Anchor); // string
-                            //ub.AutoEllipsis = item.AutoEllipsis;
-                            //ub.BackColor = Color.FromArgb(item.BackColor[0], item.BackColor[1], item.BackColor[2]);
-                            //ub.BackgroundImage = Image.FromFile(item.BackgroundImage);
-                            //ub.BackgroundImageLayout = (ImageLayout)Enum.Parse(typeof(ImageLayout), item.BackgroundImageLayout);
-                            //ub.Dock = (DockStyle)Enum.Parse(typeof(DockStyle), item.Dock);
-                            //ub.Enabled = item.Enabled;
-                            //ub.Font = new Font(item.Font[0], Single.Parse(item.Font[1])); // string[]
-                            //// ub.FontHeight protectedプロパティのため設定不可
-                            //ub.ForeColor = Color.FromArgb(item.ForeColor[0], item.ForeColor[1], item.ForeColor[2]);
-                            //ub.Height = item.Height;
-                            //ub.Image = Image.FromFile(item.Image);
-                            //ub.ImageAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.ImageAlign);
-                            ub.Location = new Point(item.Location[0], item.Location[1]);
-                            //ub.Margin = new Padding(item.Margin[0], item.Margin[1], item.Margin[2], item.Margin[3]);
-                            ub.Name = item.Name;
-                            //ub.Padding = new Padding(item.Padding[0], item.Padding[1], item.Padding[2], item.Padding[3]);
-                            ub.Size = new Size(new Point(item.Size[0], item.Size[1]));
-                            ub.Text = item.Text;
-                            //ub.TextAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.TextAlign);
-                            //ub.Visible = item.Visible;
-                            //ub.Width = item.Width;
-                            f2.Controls.Add(ub);
-                            UserButton ub2 = new UserButton(ub);
-                            f3.Controls.Add(ub2);
-                            UserButtons.Add(ub);
-                            ub.BringToFront();
-                            ub2.BringToFront();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                sr.Close();
+                LoadDesign();
             }
         }
 
@@ -316,6 +287,65 @@ namespace GUIBuilderProtoCSharp {
             StreamWriter sw = new StreamWriter(workingDirectory + "\\" + pj.Name[0] + DesignJson.Extension);
             sw.Write(System.Text.Json.JsonSerializer.Serialize(dj, ProjectJson.options));
             sw.Close();
+        }
+
+        private void reloadToolStripButton_Click(object sender, EventArgs e) {
+            switch (MessageBox.Show($"デザイン情報を再読み込みします。保存していない変更は失われますが、よろしいですか？", DESIGNER, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) {
+                case DialogResult.Yes:
+                    break;
+                default:
+                    return;
+            }
+            Form1.f1.Init();
+            LoadDesign();
+        }
+
+        public void LoadDesign() {
+            StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + pj.Designer[0]);
+            string jsonString = sr.ReadToEnd();
+            DesignJson dj = System.Text.Json.JsonSerializer.Deserialize<DesignJson>(jsonString, ProjectJson.options);
+            f2.Name = dj.Name;
+            f2.Text = dj.Text;
+            f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            foreach (var item in dj.Controls) {
+                switch (item.Type) {
+                    case nameof(UserButton):
+                        UserButton ub = new UserButton();
+                        // 一度Control型でプロパティを設定し、あとでUserButton等にキャストする方法を試す
+                        //ub.Anchor = (AnchorStyles)Enum.Parse(typeof(AnchorStyles), item.Anchor); // string
+                        //ub.AutoEllipsis = item.AutoEllipsis;
+                        //ub.BackColor = Color.FromArgb(item.BackColor[0], item.BackColor[1], item.BackColor[2]);
+                        //ub.BackgroundImage = Image.FromFile(item.BackgroundImage);
+                        //ub.BackgroundImageLayout = (ImageLayout)Enum.Parse(typeof(ImageLayout), item.BackgroundImageLayout);
+                        //ub.Dock = (DockStyle)Enum.Parse(typeof(DockStyle), item.Dock);
+                        //ub.Enabled = item.Enabled;
+                        //ub.Font = new Font(item.Font[0], Single.Parse(item.Font[1])); // string[]
+                        //// ub.FontHeight protectedプロパティのため設定不可
+                        //ub.ForeColor = Color.FromArgb(item.ForeColor[0], item.ForeColor[1], item.ForeColor[2]);
+                        //ub.Height = item.Height;
+                        //ub.Image = Image.FromFile(item.Image);
+                        //ub.ImageAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.ImageAlign);
+                        ub.Location = new Point(item.Location[0], item.Location[1]);
+                        //ub.Margin = new Padding(item.Margin[0], item.Margin[1], item.Margin[2], item.Margin[3]);
+                        ub.Name = item.Name;
+                        //ub.Padding = new Padding(item.Padding[0], item.Padding[1], item.Padding[2], item.Padding[3]);
+                        ub.Size = new Size(new Point(item.Size[0], item.Size[1]));
+                        ub.Text = item.Text;
+                        //ub.TextAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.TextAlign);
+                        //ub.Visible = item.Visible;
+                        //ub.Width = item.Width;
+                        f2.Controls.Add(ub);
+                        UserButton ub2 = new UserButton(ub);
+                        f3.Controls.Add(ub2);
+                        UserButtons.Add(ub);
+                        ub.BringToFront();
+                        ub2.BringToFront();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            sr.Close();
         }
     }
 }
