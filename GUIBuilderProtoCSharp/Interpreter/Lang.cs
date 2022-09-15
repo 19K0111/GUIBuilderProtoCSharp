@@ -249,7 +249,7 @@ namespace Interpreter {
                         if (this.Reader.NextChar() == '*') {
                             // コメントの処理
                             char nch = '_';
-                            while (nch != '*') {
+                            while (nch != '*' && nch != '\0') {
                                 nch = this.Reader.NextChar();
                                 if (nch == '*') {
                                     nch = this.Reader.NextChar();
@@ -1215,22 +1215,36 @@ namespace Interpreter {
         }
         public static void SetProperty(string controlName, string propName) {
             Control control = GUIBuilderProtoCSharp.Form1.f3.Controls.Find(controlName, true)[0];
+            var property = typeof(Control).GetProperty(propName);
             CurrentTokenIndex += 2;
             if (propName == "Text") {
+                // stringプロパティ
                 string assignText = "";
                 while (Lang.s.Tokens[CurrentTokenIndex] != TC.SEMI) {
                     if (Lang.s.Tokens[CurrentTokenIndex] == TC.PLUS) {
                         CurrentTokenIndex++;
+                        continue;
+                    } else if (Lang.s.Tokens[CurrentTokenIndex] == TC.IDENT) {
+                        // 代入式の右辺にプロパティが来るとき
+                        string[] getterProp = Lang.s.Leximes[CurrentTokenIndex].Split(".");
+                        assignText += typeof(Control).GetProperty(getterProp[1]).GetValue(GUIBuilderProtoCSharp.Form1.f3.Controls.Find(getterProp[0], true)[0]);
+                        CurrentTokenIndex++;
+                        continue;
+                    } else if (Lang.s.Tokens[CurrentTokenIndex] == TC.STR) {
+                        assignText += Lang.s.Leximes[CurrentTokenIndex];
+                        CurrentTokenIndex++;
+                    } else {
+                        CurrentTokenIndex++;
                     }
-                    assignText += Lang.s.Leximes[CurrentTokenIndex];
-                    CurrentTokenIndex++;
                 }
-                control.Text = assignText;
+                property.SetValue(control, assignText);
             } else if (propName == "Enabled") {
-                control.Enabled = bool.Parse(Lang.s.Leximes[CurrentTokenIndex]);
+                // boolプロパティ
+                // control.Enabled = bool.Parse(Lang.s.Leximes[CurrentTokenIndex]);
+                property.SetValue(control, bool.Parse(Lang.s.Leximes[CurrentTokenIndex]));
                 CurrentTokenIndex++;
             } else if (propName == "Width" || propName == "Height") {
-                var property = typeof(Control).GetProperty(propName);
+                // intプロパティ
                 property.SetValue(control, int.Parse(Lang.s.Leximes[CurrentTokenIndex]));
                 CurrentTokenIndex++;
             }

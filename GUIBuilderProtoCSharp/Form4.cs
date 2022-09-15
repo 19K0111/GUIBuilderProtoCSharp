@@ -5,12 +5,14 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace GUIBuilderProtoCSharp {
     public partial class Form4 : Form {
         static string fileName = "無題";
         static string fileDetail = "";
         char pressedKey;
+        bool highlightFlag;
         public Form4() {
             InitializeComponent();
             // RichTextBoxでフォントが勝手に変わらないための処置
@@ -83,17 +85,20 @@ namespace GUIBuilderProtoCSharp {
             IsChanged();
         }
 
-        private void richTextBox1_TextChanged(object sender, EventArgs e) {
+        private async void richTextBox1_TextChanged(object sender, EventArgs e) {
             undoToolStripMenuItem.Enabled = true;
             redoToolStripMenuItem.Enabled = false;
             Text = fileName + "* - " + Form1.CODE_EDITOR;
             (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = "";
             IsChanged();
             try {
-                Interpreter.Lang.Compile(richTextBox1.Text);
+                 Interpreter.Lang.Compile(richTextBox1.Text); // 自作の構文解析器
+                // var result = await CSharpScript.EvaluateAsync(richTextBox1.Text, globals:Form1.f3); // Microsoft.CodeAnalysis.CSharp.Scriptingを使う
             } catch (Exception ex) {
                 (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
             }
+            timer1.Stop();
+            timer1.Start();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -181,6 +186,26 @@ namespace GUIBuilderProtoCSharp {
                 //return false;
             }
             //return true;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e) {
+            highlightFlag = true;
+            if (highlightFlag) { // SyntaxHighlightを適用
+                // キャレット位置を保持
+                var start = this.richTextBox1.SelectionStart;
+                var length = this.richTextBox1.SelectionLength;
+                try {
+                    // ハイライト
+                    using (var highlighter = new Highlighter())
+                    using (var font = new Font("Consolas", 11)) {
+                        richTextBox1.Rtf = highlighter.GetRtf(richTextBox1.Text, font);
+                    }
+                } finally {
+                    // キャレット位置を復元
+                    this.richTextBox1.Select(start, length);
+                }
+            }
+            timer1.Stop();
         }
     }
 }
