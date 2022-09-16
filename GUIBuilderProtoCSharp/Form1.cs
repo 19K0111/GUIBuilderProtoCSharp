@@ -95,6 +95,7 @@ namespace GUIBuilderProtoCSharp {
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
             f4.Show();
+            f4.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y + f3.Size.Height);
             treeView1.Enabled = true;
             saveAsToolStripMenuItem.Enabled = true;
             reloadToolStripButton.Enabled = true;

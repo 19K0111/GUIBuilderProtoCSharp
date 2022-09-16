@@ -132,14 +132,14 @@ namespace GUIBuilderProtoCSharp {
                     if (flag == "NWSE" && !moving) {
                         if (-5 <= p_begin.X && p_begin.X <= 5 && -5 <= p_begin.Y && p_begin.Y <= 5) {
                             // 左上のサイズ変更
-                            if (selecting.Width > 0 && selecting.Height > 0) {
-                                t.Location = new Point(mouse.X, mouse.Y);
-                                t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
-                            } else if (selecting.Width <= 0) {
+                            t.Location = new Point(mouse.X, mouse.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height + p.Y - mouse.Y);
+                            if (selecting.Width <= 0) {
                                 // 右端がずれないようにする
                                 selecting.Width += 1;
                                 t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
-                            } else {
+                            }
+                            if (selecting.Height <= 0) {
                                 // 下端がずれないようにする
                                 selecting.Height += 1;
                                 t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
@@ -147,38 +147,47 @@ namespace GUIBuilderProtoCSharp {
                         } else {
                             // 右下のサイズ変更
                             t.Size = new Size(mouse.X - p.X, mouse.Y - p.Y);
+                            if (selecting.Width <= 0) { // 幅が0以下にならないようにする
+                                selecting.Width += 1;
+                            }
+                            if (selecting.Height <= 0) { // 高さが0以下にならないようにする
+                                selecting.Height += 1;
+                            }
                         }
                         resizing = true;
                     } else if (flag == "NESW" && !moving) {
                         if (-5 + originSize.Width <= p_begin.X && p_begin.X <= 5 + originSize.Width && -5 <= p_begin.Y && p_begin.Y <= 5) {
                             // 右上のサイズ変更
-                            if (selecting.Height > 0) {
-                                t.Location = new Point(p.X, mouse.Y);
-                                t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
-                            } else {
+                            t.Location = new Point(p.X, mouse.Y);
+                            t.Size = new Size(mouse.X - p.X, selecting.Height + (p.Y - mouse.Y));
+                            if (selecting.Width <= 0) { // 幅が0以下にならないようにする
+                                selecting.Width += 1;
+                            }
+                            if (selecting.Height <= 0) {
                                 // 下端がずれないようにする
                                 selecting.Height += 1;
                                 t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
                             }
                         } else {
                             // 左下のサイズ変更
-                            if (selecting.Width > 0) {
-                                t.Location = new Point(mouse.X, p.Y);
-                                t.Size = new Size(selecting.Width + p.X - mouse.X, mouse.Y - p.Y);
-                            } else {
+                            t.Location = new Point(mouse.X, p.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, mouse.Y - p.Y);
+                            if (selecting.Width <= 0) {
                                 // 右端がずれないようにする
                                 selecting.Width += 1;
                                 t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
+                            }
+                            if (selecting.Height <= 0) { // 高さが0以下にならないようにする
+                                selecting.Height += 1;
                             }
                         }
                         resizing = true;
                     } else if (flag == "WE" && !moving) {
                         if (-5 <= p_begin.X && p_begin.X <= 5) {
                             // 左のサイズ変更
-                            if (selecting.Width > 0) {
-                                t.Location = new Point(mouse.X, t.Location.Y);
-                                t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
-                            } else {
+                            t.Location = new Point(mouse.X, t.Location.Y);
+                            t.Size = new Size(selecting.Width + p.X - mouse.X, selecting.Height);
+                            if (selecting.Width <= 0) {
                                 // 右端がずれないようにする
                                 selecting.Width += 1;
                                 t.Location = new Point(originLocation.X + originSize.Width, t.Location.Y);
@@ -186,15 +195,17 @@ namespace GUIBuilderProtoCSharp {
                         } else {
                             // 右のサイズ変更
                             t.Size = new Size(mouse.X - p.X, selecting.Height);
+                            if (selecting.Width <= 0) { // 幅が0以下にならないようにする
+                                selecting.Width += 1;
+                            }
                         }
                         resizing = true;
                     } else if (flag == "NS" && !moving) {
                         if (-5 <= p_begin.Y && p_begin.Y <= 5) {
                             // 上のサイズ変更
-                            if (selecting.Height > 0) {
-                                t.Location = new Point(t.Location.X, mouse.Y);
-                                t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
-                            } else {
+                            t.Location = new Point(t.Location.X, mouse.Y);
+                            t.Size = new Size(selecting.Width, selecting.Height + (p.Y - mouse.Y));
+                            if (selecting.Height <= 0) {
                                 // 下端がずれないようにする
                                 selecting.Height += 1;
                                 t.Location = new Point(t.Location.X, originLocation.Y + originSize.Height);
@@ -202,6 +213,9 @@ namespace GUIBuilderProtoCSharp {
                         } else {
                             // 下のサイズ変更
                             t.Size = new Size(selecting.Width, mouse.Y - p.Y);
+                            if (selecting.Height <= 0) { // 高さが0以下にならないようにする
+                                selecting.Height += 1;
+                            }
                         }
                         resizing = true;
                     } else if (flag == "Default" && !resizing && p_begin.X >= 0 && p_begin.Y >= 0) {
@@ -240,14 +254,9 @@ namespace GUIBuilderProtoCSharp {
             }
         }
         internal static void UserControl_MouseUp(object sender, MouseEventArgs e) {
-            if (moving) {
-                List<object> before = new List<object> { originLocation };
-                List<object> after = new List<object> { ((Control)sender).Location };
-                Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
-                Form1.redo.Clear();
-            } else if (resizing) {
-                List<object> before = new List<object> { originSize };
-                List<object> after = new List<object> { ((Control)sender).Size };
+            if (moving || resizing) {
+                List<object> before = new List<object> { originLocation, originSize };
+                List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
                 Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
                 Form1.redo.Clear();
             }
