@@ -255,10 +255,12 @@ namespace GUIBuilderProtoCSharp {
         }
         internal static void UserControl_MouseUp(object sender, MouseEventArgs e) {
             if (moving || resizing) {
+                if (originLocation != ((Control)sender).Location || originSize != ((Control)sender).Size) {
                 List<object> before = new List<object> { originLocation, originSize };
                 List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
                 Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
                 Form1.redo.Clear();
+                }
             }
             Modify.Check(Form1.undo, Form1.redo);
             Form1.f1.Cursor = Cursors.Default;
@@ -350,6 +352,14 @@ namespace GUIBuilderProtoCSharp {
                     break;
             }
         }
+
+        internal static void UserControl_Enter(object sender, EventArgs e) {
+            Form1.f1.SetPropView((Control)sender);
+        }
+
+        internal static void UserControl_Leave(object sender, EventArgs e) {
+
+        }
     }
 
 
@@ -374,6 +384,8 @@ namespace GUIBuilderProtoCSharp {
             this.KeyDown += UserControl.UserControl_KeyDown;
             this.PreviewKeyDown += UserControl.UserControl_PreviewKeyDown;
             this.KeyUp += UserControl.UserControl_KeyUp;
+            this.Enter += UserControl.UserControl_Enter;
+            this.Leave += UserControl.UserControl_Leave;
 
             for (int i = 0; i < UserButtons.Count; i++) {
                 // Nameが重複しないようにする処理

@@ -54,6 +54,22 @@
             treeNode11,
             treeNode12});
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("共通", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Button", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("CheckBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("CheckedListBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("DateTimePicker", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Label", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("ListBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("PictureBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("ProgressBar", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("RadioButton", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("RichTextBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("TextBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Anchor");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("AutoEllipsis");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("BackColor");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Text");
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -88,6 +104,8 @@
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.プレビューウィンドウPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.常に最前面に表示FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,9 +133,18 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.propName = new System.Windows.Forms.ColumnHeader();
+            this.Value = new System.Windows.Forms.ColumnHeader();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.splitter2 = new System.Windows.Forms.Splitter();
             this.statusStrip1.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox1
@@ -211,6 +238,7 @@
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Visible = false;
             // 
             // ポインターToolStripMenuItem
             // 
@@ -464,6 +492,7 @@
             // windowsMenu
             // 
             this.windowsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.プレビューウィンドウPToolStripMenuItem,
             this.newWindowToolStripMenuItem,
             this.cascadeToolStripMenuItem,
             this.tileVerticalToolStripMenuItem,
@@ -473,43 +502,63 @@
             this.windowsMenu.Name = "windowsMenu";
             this.windowsMenu.Size = new System.Drawing.Size(80, 20);
             this.windowsMenu.Text = "ウィンドウ(&W)";
-            this.windowsMenu.Visible = false;
+            // 
+            // プレビューウィンドウPToolStripMenuItem
+            // 
+            this.プレビューウィンドウPToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.常に最前面に表示FToolStripMenuItem});
+            this.プレビューウィンドウPToolStripMenuItem.Name = "プレビューウィンドウPToolStripMenuItem";
+            this.プレビューウィンドウPToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.プレビューウィンドウPToolStripMenuItem.Text = "プレビューウィンドウ(&P)";
+            // 
+            // 常に最前面に表示FToolStripMenuItem
+            // 
+            this.常に最前面に表示FToolStripMenuItem.Name = "常に最前面に表示FToolStripMenuItem";
+            this.常に最前面に表示FToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.常に最前面に表示FToolStripMenuItem.Text = "常に最前面に表示(&F)";
+            this.常に最前面に表示FToolStripMenuItem.Click += new System.EventHandler(this.常に最前面に表示FToolStripMenuItem_Click);
             // 
             // newWindowToolStripMenuItem
             // 
             this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
             this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.newWindowToolStripMenuItem.Text = "新しいウィンドウを開く(&N)";
+            this.newWindowToolStripMenuItem.Visible = false;
             // 
             // cascadeToolStripMenuItem
             // 
             this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
             this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.cascadeToolStripMenuItem.Text = "重ねて表示(&C)";
+            this.cascadeToolStripMenuItem.Visible = false;
             // 
             // tileVerticalToolStripMenuItem
             // 
             this.tileVerticalToolStripMenuItem.Name = "tileVerticalToolStripMenuItem";
             this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.tileVerticalToolStripMenuItem.Text = "左右に並べて表示(&V)";
+            this.tileVerticalToolStripMenuItem.Visible = false;
             // 
             // tileHorizontalToolStripMenuItem
             // 
             this.tileHorizontalToolStripMenuItem.Name = "tileHorizontalToolStripMenuItem";
             this.tileHorizontalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.tileHorizontalToolStripMenuItem.Text = "上下に並べて表示(&H)";
+            this.tileHorizontalToolStripMenuItem.Visible = false;
             // 
             // closeAllToolStripMenuItem
             // 
             this.closeAllToolStripMenuItem.Name = "closeAllToolStripMenuItem";
             this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.closeAllToolStripMenuItem.Text = "すべて閉じる(&L)";
+            this.closeAllToolStripMenuItem.Visible = false;
             // 
             // arrangeIconsToolStripMenuItem
             // 
             this.arrangeIconsToolStripMenuItem.Name = "arrangeIconsToolStripMenuItem";
             this.arrangeIconsToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.arrangeIconsToolStripMenuItem.Text = "アイコンの整列(&A)";
+            this.arrangeIconsToolStripMenuItem.Visible = false;
             // 
             // helpMenu
             // 
@@ -528,7 +577,7 @@
             // 
             this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
             this.contentsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F1)));
-            this.contentsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.contentsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.contentsToolStripMenuItem.Text = "目次(&C)";
             // 
             // indexToolStripMenuItem
@@ -536,7 +585,7 @@
             this.indexToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("indexToolStripMenuItem.Image")));
             this.indexToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
-            this.indexToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.indexToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.indexToolStripMenuItem.Text = "インデックス(&I)";
             // 
             // searchToolStripMenuItem
@@ -544,18 +593,18 @@
             this.searchToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("searchToolStripMenuItem.Image")));
             this.searchToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.searchToolStripMenuItem.Text = "検索(&S)";
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(176, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.aboutToolStripMenuItem.Text = "バージョン情報(&A)... ...";
             // 
             // toolStrip
@@ -700,11 +749,136 @@
             // 
             this.openFileDialog1.Filter = "プロジェクトファイル|*.proj";
             // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.propName,
+            this.Value});
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.listView1.Enabled = false;
+            this.listView1.FullRowSelect = true;
+            this.listView1.GridLines = true;
+            listViewGroup1.Header = "共通";
+            listViewGroup1.Name = "CommonGroup";
+            listViewGroup2.Header = "Button";
+            listViewGroup2.Name = "ButtonGroup";
+            listViewGroup3.Header = "CheckBox";
+            listViewGroup3.Name = "CheckBoxGroup";
+            listViewGroup4.Header = "CheckedListBox";
+            listViewGroup4.Name = "CheckedListBoxGroup";
+            listViewGroup5.Header = "DateTimePicker";
+            listViewGroup5.Name = "DateTimePickerGroup";
+            listViewGroup6.Header = "Label";
+            listViewGroup6.Name = "LabelGroup";
+            listViewGroup7.Header = "ListBox";
+            listViewGroup7.Name = "ListBoxGroup";
+            listViewGroup8.Header = "PictureBox";
+            listViewGroup8.Name = "PictureBoxGroup";
+            listViewGroup9.Header = "ProgressBar";
+            listViewGroup9.Name = "ProgressBarGroup";
+            listViewGroup10.Header = "RadioButton";
+            listViewGroup10.Name = "RadioButtonGroup";
+            listViewGroup11.Header = "RichTextBox";
+            listViewGroup11.Name = "RichTextBoxGroup";
+            listViewGroup12.Header = "TextBox";
+            listViewGroup12.Name = "TextBoxGroup";
+            this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3,
+            listViewGroup4,
+            listViewGroup5,
+            listViewGroup6,
+            listViewGroup7,
+            listViewGroup8,
+            listViewGroup9,
+            listViewGroup10,
+            listViewGroup11,
+            listViewGroup12});
+            listViewItem1.Group = listViewGroup1;
+            listViewItem2.Group = listViewGroup1;
+            listViewItem3.Group = listViewGroup1;
+            listViewItem4.Group = listViewGroup1;
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4});
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(186, 280);
+            this.listView1.TabIndex = 13;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+            // 
+            // propName
+            // 
+            this.propName.Text = "プロパティ";
+            this.propName.Width = 100;
+            // 
+            // Value
+            // 
+            this.Value.Text = "値";
+            this.Value.Width = 150;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.splitter1);
+            this.panel1.Controls.Add(this.listView1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Location = new System.Drawing.Point(614, 49);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(186, 369);
+            this.panel1.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(0, 283);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(186, 86);
+            this.label1.TabIndex = 14;
+            // 
+            // textBox1
+            // 
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox1.Location = new System.Drawing.Point(83, 39);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 23);
+            this.textBox1.TabIndex = 16;
+            this.textBox1.Visible = false;
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_Leave);
+            // 
+            // splitter1
+            // 
+            this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter1.Location = new System.Drawing.Point(0, 280);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(186, 3);
+            this.splitter1.TabIndex = 15;
+            this.splitter1.TabStop = false;
+            // 
+            // splitter2
+            // 
+            this.splitter2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.splitter2.Location = new System.Drawing.Point(611, 49);
+            this.splitter2.Name = "splitter2";
+            this.splitter2.Size = new System.Drawing.Size(3, 369);
+            this.splitter2.TabIndex = 17;
+            this.splitter2.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 440);
+            this.Controls.Add(this.splitter2);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
@@ -720,6 +894,8 @@
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -788,5 +964,15 @@
         private OpenFileDialog openFileDialog1;
         private ToolStripButton reloadToolStripButton;
         private ToolStripSeparator toolStripSeparator10;
+        private ToolStripMenuItem プレビューウィンドウPToolStripMenuItem;
+        private ToolStripMenuItem 常に最前面に表示FToolStripMenuItem;
+        private ListView listView1;
+        private ColumnHeader propName;
+        private ColumnHeader Value;
+        private Panel panel1;
+        private Label label1;
+        private Splitter splitter1;
+        private Splitter splitter2;
+        private TextBox textBox1;
     }
 }

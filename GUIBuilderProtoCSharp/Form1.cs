@@ -58,6 +58,7 @@ namespace GUIBuilderProtoCSharp {
         internal static Stack<Modify> redo = new Stack<Modify>(); // [Ctrl] + [Y]
         internal static Stack<Modify> undo = new Stack<Modify>(); // [Ctrl] + [Z]
         TreeNode? selectedItem = null;
+        ControlProperties controlProperties = new ControlProperties();
         public Form1() {
             InitializeComponent();
         }
@@ -91,7 +92,7 @@ namespace GUIBuilderProtoCSharp {
 
             f2.MdiParent = this;
             f2.Show();
-            f2.Location = new Point(200, 10);
+            f2.Location = new Point(10, 10);
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
             f4.Show();
@@ -127,6 +128,7 @@ namespace GUIBuilderProtoCSharp {
             consoleForm.Controls.Add(tb);
 
             treeView1.ExpandAll();
+            SetPropView(null);
 
             toolStripStatusLabel1.Text = $"サイズ：{f2.Size.Width} x {f2.Size.Height}";
         }
@@ -307,7 +309,12 @@ namespace GUIBuilderProtoCSharp {
             DesignJson dj = System.Text.Json.JsonSerializer.Deserialize<DesignJson>(jsonString, ProjectJson.options);
             f2.Name = dj.Name;
             f2.Text = dj.Text;
+            f3.Text = dj.Text + " - プレビュー";
             f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            f3.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            f2.Location = new Point(10, 10);
+            f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
+            f4.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y + f3.Size.Height);
             foreach (var item in dj.Controls) {
                 switch (item.Type) {
                     case nameof(UserButton):
@@ -347,6 +354,133 @@ namespace GUIBuilderProtoCSharp {
                 }
             }
             sr.Close();
+        }
+
+        private void 常に最前面に表示FToolStripMenuItem_Click(object sender, EventArgs e) {
+            常に最前面に表示FToolStripMenuItem.Checked = !常に最前面に表示FToolStripMenuItem.Checked;
+            f3.TopMost = 常に最前面に表示FToolStripMenuItem.Checked;
+        }
+
+        public void SetPropView(Control control) {
+            listView1.Clear();
+
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("共通", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Button", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("CheckBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("CheckedListBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("DateTimePicker", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Label", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("ListBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("PictureBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("ProgressBar", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("RadioButton", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("RichTextBox", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("TextBox", System.Windows.Forms.HorizontalAlignment.Left);
+
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { this.propName, this.Value });
+            {
+                listViewGroup1.Header = "共通";
+                listViewGroup1.Name = "CommonGroup";
+                listViewGroup2.Header = "Button";
+                listViewGroup2.Name = "ButtonGroup";
+                listViewGroup3.Header = "CheckBox";
+                listViewGroup3.Name = "CheckBoxGroup";
+                listViewGroup4.Header = "CheckedListBox";
+                listViewGroup4.Name = "CheckedListBoxGroup";
+                listViewGroup5.Header = "DateTimePicker";
+                listViewGroup5.Name = "DateTimePickerGroup";
+                listViewGroup6.Header = "Label";
+                listViewGroup6.Name = "LabelGroup";
+                listViewGroup7.Header = "ListBox";
+                listViewGroup7.Name = "ListBoxGroup";
+                listViewGroup8.Header = "PictureBox";
+                listViewGroup8.Name = "PictureBoxGroup";
+                listViewGroup9.Header = "ProgressBar";
+                listViewGroup9.Name = "ProgressBarGroup";
+                listViewGroup10.Header = "RadioButton";
+                listViewGroup10.Name = "RadioButtonGroup";
+                listViewGroup11.Header = "RichTextBox";
+                listViewGroup11.Name = "RichTextBoxGroup";
+                listViewGroup12.Header = "TextBox";
+                listViewGroup12.Name = "TextBoxGroup";
+            }
+
+            this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+                listViewGroup1,
+                listViewGroup2,
+                listViewGroup3,
+                listViewGroup4,
+                listViewGroup5,
+                listViewGroup6,
+                listViewGroup7,
+                listViewGroup8,
+                listViewGroup9,
+                listViewGroup10,
+                listViewGroup11,
+                listViewGroup12});
+            listView1.Enabled = (control == null ? false : true);
+            for (int i = 0; i < controlProperties.Count; i++) {
+                System.Reflection.PropertyInfo? property;
+                string[] pairs;
+                if (control == null) {
+                    pairs = new string[] { ControlProperties.commonProperties[i] };
+                } else {
+                    try {
+                        property = typeof(Control).GetProperty(ControlProperties.commonProperties[i]);
+                        pairs = new string[] { ControlProperties.commonProperties[i], property.GetValue(f3.Controls.Find(control.Name, true)[0]).ToString() };
+                    } catch (NullReferenceException) {
+                        pairs = new string[] { ControlProperties.commonProperties[i], "null" };
+                    }
+                }
+                ListViewItem item = new ListViewItem(pairs);
+                listView1.Items.Add(item);
+                item.Group = listViewGroup1;
+            }
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e) {
+            try {
+                label1.Text = $"{((ListView)sender).FocusedItem.Text}\n{controlProperties.GetDescription(((ListView)sender).FocusedItem.Text)}";
+            } catch (NullReferenceException) {
+                label1.Text = "";
+                return;
+            }
+        }
+
+        private void listView1_DoubleClick(object sender, EventArgs e) {
+            // ListViewの値を編集するときにテキストボックスを表示させる方法
+            // https://qiita.com/Toraja/items/51dd3ec878c647583231
+            ListViewItem.ListViewSubItem currentColumn = listView1.SelectedItems[0].SubItems[1];
+            Rectangle rect = currentColumn.Bounds;
+            rect.Intersect(listView1.ClientRectangle);
+            rect.Y += 1; // 微調整 環境によっては表示が崩れる可能性がある
+            rect.X += 5; // 微調整 環境によっては表示が崩れる可能性がある
+            textBox1.Visible = true;
+            textBox1.Text = currentColumn.Text;
+            textBox1.Bounds = rect;
+            textBox1.Focus();
+            textBox1.SelectAll();
+        }
+
+        private void textBox1_Leave(object sender, EventArgs e) {
+            textBox1.Visible = false;
+            listView1.SelectedItems[0].SubItems[1].Text = textBox1.Text;
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e) {
+            // ListViewの値を編集するときにテキストボックスを表示させる方法
+            // https://qiita.com/Toraja/items/51dd3ec878c647583231
+            switch (e.KeyChar) {
+                case (char)Keys.Enter:
+                    listView1.Focus();
+                    e.Handled = true;
+                    break;
+                case (char)Keys.Escape:
+                    textBox1.Text = listView1.SelectedItems[0].SubItems[1].Text;
+                    listView1.Focus();
+                    e.Handled = true;
+                    break;
+            }
         }
     }
 }
