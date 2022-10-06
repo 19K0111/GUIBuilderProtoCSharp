@@ -507,9 +507,9 @@
         private ToolStripMenuItem searchToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator8;
         private ToolStripMenuItem aboutToolStripMenuItem;
-        private RichTextBox richTextBox1;
         private OpenFileDialog openFileDialog1;
         private SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Timer timer1;
+        protected internal RichTextBox richTextBox1;
     }
 }

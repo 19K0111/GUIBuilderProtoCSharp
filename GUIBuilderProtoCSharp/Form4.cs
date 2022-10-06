@@ -85,7 +85,7 @@ namespace GUIBuilderProtoCSharp {
             IsChanged();
         }
 
-        private async void richTextBox1_TextChanged(object sender, EventArgs e) {
+        protected internal async void richTextBox1_TextChanged(object sender, EventArgs e) {
             undoToolStripMenuItem.Enabled = true;
             redoToolStripMenuItem.Enabled = false;
             Text = fileName + "* - " + Form1.CODE_EDITOR;

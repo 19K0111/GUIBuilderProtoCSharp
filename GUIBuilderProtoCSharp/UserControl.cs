@@ -256,10 +256,11 @@ namespace GUIBuilderProtoCSharp {
         internal static void UserControl_MouseUp(object sender, MouseEventArgs e) {
             if (moving || resizing) {
                 if (originLocation != ((Control)sender).Location || originSize != ((Control)sender).Size) {
-                List<object> before = new List<object> { originLocation, originSize };
-                List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
-                Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
-                Form1.redo.Clear();
+                    List<object> before = new List<object> { originLocation, originSize };
+                    List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
+                    Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
+                    Form1.redo.Clear();
+                    Form1.f1.SetPropView((Control)sender);
                 }
             }
             Modify.Check(Form1.undo, Form1.redo);

@@ -45,12 +45,14 @@ namespace GUIBuilderProtoCSharp {
         public static Form2 f2 = new Form2();
         public static Form3 f3 = new Form3();
         public static Form4 f4 = new Form4();
+        public static Form5 f5 = new Form5();
         public static NewProjectDialog newProjectDialog = new NewProjectDialog();
         public static Form consoleForm = new Form();
 
         public const string DESIGNER = "デザイナー";
         public const string CONSOLE = "コンソール";
         public const string CODE_EDITOR = "コードエディタ";
+        public const string BLOCK_EDITOR = "ブロックエディタ";
 
         internal static ProjectJson pj;
         public static string workingDirectory = "";
@@ -90,6 +92,7 @@ namespace GUIBuilderProtoCSharp {
             f2.Controls.Clear();
             f3.Controls.Clear();
 
+            f5.Show();
             f2.MdiParent = this;
             f2.Show();
             f2.Location = new Point(10, 10);
