@@ -48,6 +48,7 @@ namespace GUIBuilderProtoCSharp {
         public static Form5 f5 = new Form5();
         public static NewProjectDialog newProjectDialog = new NewProjectDialog();
         public static Form consoleForm = new Form();
+        public static ConcretePropertySettingForm concretePropertyForm = new ConcretePropertySettingForm();
 
         public const string DESIGNER = "デザイナー";
         public const string CONSOLE = "コンソール";
@@ -353,7 +354,7 @@ namespace GUIBuilderProtoCSharp {
                         ub2.BringToFront();
                         break;
                     default:
-                        break;
+                        throw (new NotImplementedException());
                 }
             }
             sr.Close();
@@ -422,28 +423,68 @@ namespace GUIBuilderProtoCSharp {
                 listViewGroup11,
                 listViewGroup12});
             listView1.Enabled = (control == null ? false : true);
-            for (int i = 0; i < controlProperties.Count; i++) {
+            PropertiesFactory common = new ControlProperties();
+            for (int i = 0; i < common.Count; i++) { // 共通のプロパティ
                 System.Reflection.PropertyInfo? property;
                 string[] pairs;
                 if (control == null) {
-                    pairs = new string[] { ControlProperties.commonProperties[i] };
+                    pairs = new string[] { common.GetProperty(i) };
                 } else {
                     try {
-                        property = typeof(Control).GetProperty(ControlProperties.commonProperties[i]);
-                        pairs = new string[] { ControlProperties.commonProperties[i], property.GetValue(f3.Controls.Find(control.Name, true)[0]).ToString() };
+                        property = UserControl.GetSelectedControlType().GetProperty(common.GetProperty(i));
+                        pairs = new string[] { common.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
                     } catch (NullReferenceException) {
-                        pairs = new string[] { ControlProperties.commonProperties[i], "null" };
+                        pairs = new string[] { common.GetProperty(i), "null" };
                     }
                 }
                 ListViewItem item = new ListViewItem(pairs);
                 listView1.Items.Add(item);
                 item.Group = listViewGroup1;
             }
+            PropertiesFactory? component = null;
+            ListViewGroup? group = null;
+            switch (UserControl.GetSelectedControl()) {
+                case UserButton ub:
+                    component = new ButtonProperties();
+                    group = listViewGroup2;
+                    break;
+                case null:
+                    return;
+                default:
+                    throw new NotImplementedException();
+            }
+            for (int i = 0; i < component.Count; i++) { // 各GUI部品に応じたプロパティ
+                System.Reflection.PropertyInfo? property;
+                string[] pairs;
+                if (control == null) {
+                    pairs = new string[] { component.GetProperty(i) };
+                } else {
+                    try {
+                        property = UserControl.GetSelectedControlType().GetProperty(component.GetProperty(i));
+                        pairs = new string[] { component.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
+                    } catch (NullReferenceException) {
+                        pairs = new string[] { component.GetProperty(i), "null" };
+                    }
+                }
+                ListViewItem item = new ListViewItem(pairs);
+                listView1.Items.Add(item);
+                item.Group = group;
+            }
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e) {
+            PropertiesFactory factory;
+            switch (UserControl.GetSelectedControl()) {
+                case UserButton ub:
+                    factory = new ButtonProperties();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
             try {
                 label1.Text = $"{((ListView)sender).FocusedItem.Text}\n{controlProperties.GetDescription(((ListView)sender).FocusedItem.Text)}";
+            } catch (KeyNotFoundException) {
+                label1.Text = $"{((ListView)sender).FocusedItem.Text}\n{factory.GetDescription(((ListView)sender).FocusedItem.Text)}";
             } catch (NullReferenceException) {
                 label1.Text = "";
                 return;
@@ -458,16 +499,110 @@ namespace GUIBuilderProtoCSharp {
             rect.Intersect(listView1.ClientRectangle);
             rect.Y += 1; // 微調整 環境によっては表示が崩れる可能性がある
             rect.X += 5; // 微調整 環境によっては表示が崩れる可能性がある
-            textBox1.Visible = true;
-            textBox1.Text = currentColumn.Text;
-            textBox1.Bounds = rect;
-            textBox1.Focus();
-            textBox1.SelectAll();
+
+            System.Reflection.PropertyInfo? property = UserControl.GetSelectedControlType().GetProperty(((ListView)sender).FocusedItem.Text);
+            // Type? returnType = (Type)property.GetValue(f2.Controls.Find(UserControl.GetSelectedControl().Name, true)[0]).GetType();
+            Type? returnType = property.PropertyType;
+            if (returnType == typeof(string)) {
+                textBox1.Visible = true;
+                textBox1.Text = currentColumn.Text;
+                textBox1.Bounds = rect;
+                textBox1.Focus();
+                textBox1.SelectAll();
+            } else if (returnType == typeof(int)) {
+                // NumericUpDownを使用
+                numericUpDown1.Minimum = int.MinValue;
+                numericUpDown1.Maximum = int.MaxValue;
+                numericUpDown1.Value = int.Parse(currentColumn.Text);
+                numericUpDown1.Visible = true;
+                numericUpDown1.Bounds = rect;
+                numericUpDown1.Focus();
+                numericUpDown1.Select(0, numericUpDown1.Value.ToString().Length);
+            } else if (returnType == typeof(bool)) {
+                // ComboBoxを使用
+                comboBox1.Items.Clear();
+                System.Reflection.FieldInfo[] fields = typeof(bool).GetFields();
+                for (int i = 0; i < fields.Length; i++) {
+                    string? additem = fields[i].GetValue(fields[i]).ToString();
+                    comboBox1.Items.Add(additem);
+                    if (additem == currentColumn.Text) {
+                        comboBox1.SelectedIndex = i;
+                    }
+                }
+                comboBox1.Visible = true;
+                comboBox1.Bounds = rect;
+                comboBox1.Focus();
+            } else if (((Type)returnType).BaseType == typeof(Enum)) {
+                if (returnType == typeof(AnchorStyles)) {
+                    concretePropertyForm.Controls.Clear();
+                    AnchorProperty anchorProperty = new AnchorProperty(UserControl.GetSelectedControl().Anchor);
+                    concretePropertyForm.Controls.Add(anchorProperty);
+                    concretePropertyForm.Text = property.Name;
+                    concretePropertyForm.ClientSize = new Size(anchorProperty.Size.Width, anchorProperty.Size.Height);
+                    switch (concretePropertyForm.ShowDialog()) {
+                        case DialogResult.Cancel:
+                            break;
+                        default:
+                            break;
+                    }
+                    currentColumn.Text = anchorProperty.returnValue.ToString();
+                    SetValueFromListBox(UserControl.GetSelectedControl(), property, anchorProperty.returnValue);
+                } else {
+                    // ComboBoxを使用
+                    comboBox1.Items.Clear();
+                    Array values = Enum.GetValues(returnType);
+                    for (int i = 0; i < values.Length; i++) {
+                        string? additem = values.GetValue(i).ToString();
+                        comboBox1.Items.Add(additem);
+                        if (additem == currentColumn.Text) {
+                            comboBox1.SelectedIndex = i;
+                        }
+                    }
+                    comboBox1.Visible = true;
+                    comboBox1.Bounds = rect;
+                    comboBox1.Focus();
+                }
+            } else if (returnType == typeof(Color)) {
+                colorDialog1.Color = (Color)property.GetValue(UserControl.GetSelectedControl());
+                switch (colorDialog1.ShowDialog()) {
+                    case (DialogResult.Cancel):
+                        return;
+                    default:
+                        break;
+                }
+                currentColumn.Text = colorDialog1.Color.ToString();
+                SetValueFromListBox(UserControl.GetSelectedControl(), property, colorDialog1.Color);
+                return;
+            } else if (returnType.BaseType == typeof(ValueType)) {
+                // 別のダイアログにテキストボックスを配置
+                List<System.Reflection.PropertyInfo> properties = new List<System.Reflection.PropertyInfo>();
+                properties = returnType.GetProperties().ToList();
+                concretePropertyForm.Controls.Clear();
+                ValueTypeProperty valueTypeProperty = new ValueTypeProperty();
+                concretePropertyForm.Controls.Add(valueTypeProperty);
+                concretePropertyForm.Text = property.Name;
+                //concretePropertyForm.ClientSize = new Size(valueTypeProperty.Size.Width, valueTypeProperty.Size.Height);
+                properties.RemoveAll(p => p.SetMethod == null); // Setterのないプロパティを除く
+                foreach (System.Reflection.PropertyInfo p in properties) {
+                    string[] pairs = { p.Name, p.GetValue(UserControl.GetSelectedControl()).ToString() };
+                    ListViewItem item = new ListViewItem(pairs);
+                    valueTypeProperty.listView1.Items.Add(item);
+                }
+                switch (concretePropertyForm.ShowDialog()) {
+                    case DialogResult.Cancel:
+                        break;
+                    default:
+                        break;
+                }
+                SetValueFromListBox(UserControl.GetSelectedControl(), property, valueTypeProperty.returnValue);
+                currentColumn.Text = valueTypeProperty.returnValue.ToString();
+            }
         }
 
         private void textBox1_Leave(object sender, EventArgs e) {
             textBox1.Visible = false;
             listView1.SelectedItems[0].SubItems[1].Text = textBox1.Text;
+            SetValueFromListBox(UserControl.GetSelectedControl(), listView1.SelectedItems[0].Text, textBox1.Text);
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e) {
@@ -484,6 +619,31 @@ namespace GUIBuilderProtoCSharp {
                     e.Handled = true;
                     break;
             }
+        }
+
+        private void comboBox1_Leave(object sender, EventArgs e) {
+            comboBox1.Visible = false;
+            listView1.SelectedItems[0].SubItems[1].Text = comboBox1.SelectedItem.ToString();
+            SetValueFromListBox(UserControl.GetSelectedControl(), listView1.SelectedItems[0].Text, comboBox1.SelectedItem.ToString());
+        }
+
+        private void numericUpDown1_Leave(object sender, EventArgs e) {
+            numericUpDown1.Visible = false;
+            listView1.SelectedItems[0].SubItems[1].Text = numericUpDown1.Value.ToString();
+            SetValueFromListBox(UserControl.GetSelectedControl(), listView1.SelectedItems[0].Text, numericUpDown1.Value.ToString());
+        }
+
+        public void SetValueFromListBox(Control? control, System.Reflection.PropertyInfo? propName, object? value) {
+            propName.SetValue(control, value);
+            propName.SetValue(UserControl.FindPreview(control), value);
+        }
+        public void SetValueFromListBox(Control? control, string? propName, object? value) {
+            System.Reflection.PropertyInfo property = UserControl.GetSelectedControlType().GetProperty(propName);
+            if (property.PropertyType.BaseType == typeof(Enum)) {
+                object strToEnum;
+                Enum.TryParse(property.PropertyType, value.ToString(), out value);
+            }
+            SetValueFromListBox(control, property, Convert.ChangeType(value, property.PropertyType));
         }
     }
 }

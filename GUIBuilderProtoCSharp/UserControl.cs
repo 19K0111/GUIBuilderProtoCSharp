@@ -83,10 +83,17 @@ namespace GUIBuilderProtoCSharp {
             }
         }
 
+        public static Control GetSelectedControl() {
+            return selecting;
+        }
+        public static Type GetSelectedControlType() {
+            return selecting.GetType();
+        }
+
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
                 p_begin = new Point(e.X, e.Y); // コントロールの左上基準
-                selecting = (Control)sender;
+                //selecting = (Control)sender;
                 originSize = selecting.Size;
                 originLocation = selecting.Location;
                 System.Diagnostics.Debug.WriteLine($"({e.X}, {e.Y})");
@@ -355,6 +362,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         internal static void UserControl_Enter(object sender, EventArgs e) {
+            selecting = (Control)sender;
             Form1.f1.SetPropView((Control)sender);
         }
 
