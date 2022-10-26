@@ -82,8 +82,6 @@ namespace GUIBuilderProtoCSharp {
 
             UserControl.init();
 
-            UserButton.UserButtons.Clear();
-
             //f2 = new Form2();
             //f3 = new Form3();
             f2.Text = "Form";
@@ -105,6 +103,17 @@ namespace GUIBuilderProtoCSharp {
             saveAsToolStripMenuItem.Enabled = true;
             reloadToolStripButton.Enabled = true;
 
+            consoleForm.Show();
+            consoleForm.Location = new Point(f1.Location.X, f1.Location.Y + f1.Size.Height);
+            consoleForm.Size = new Size(600, 300);
+            consoleForm.Text = "コンソール";
+            TextBox tb = new TextBox();
+            tb.Name = "debug";
+            tb.Dock = DockStyle.Fill;
+            tb.Enabled = false;
+            tb.Multiline = true;
+            consoleForm.Controls.Add(tb);
+
             undo.Clear();
             redo.Clear();
             Modify.Check(undo, redo);
@@ -120,16 +129,6 @@ namespace GUIBuilderProtoCSharp {
 
             //UserControl.UserControls.Add(UserButton.UserButtons);
 
-            consoleForm.Show();
-            consoleForm.Location = new Point(f3.Location.X, f3.Location.Y + f3.Size.Height);
-            consoleForm.Size = new Size(600, 300);
-            consoleForm.Text = "コンソール";
-            TextBox tb = new TextBox();
-            tb.Name = "debug";
-            tb.Dock = DockStyle.Fill;
-            tb.Enabled = false;
-            tb.Multiline = true;
-            consoleForm.Controls.Add(tb);
 
             treeView1.ExpandAll();
             SetPropView(null);
@@ -222,10 +221,12 @@ namespace GUIBuilderProtoCSharp {
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
             Modify.Undo(undo, redo);
+            propertyGrid1.SelectedObject = UserControl.GetSelectedControl();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e) {
             Modify.Redo(redo, undo);
+            propertyGrid1.SelectedObject = UserControl.GetSelectedControl();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -366,50 +367,52 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public void SetPropView(Control control) {
-            listView1.Clear();
+            propertyGrid1.SelectedObject = control;
+            if (false) {
+                listView1.Clear();
 
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("共通", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Button", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("CheckBox", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("CheckedListBox", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("DateTimePicker", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Label", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("ListBox", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("PictureBox", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("ProgressBar", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("RadioButton", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("RichTextBox", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("TextBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("共通", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Button", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("CheckBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("CheckedListBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("DateTimePicker", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Label", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("ListBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("PictureBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("ProgressBar", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("RadioButton", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("RichTextBox", System.Windows.Forms.HorizontalAlignment.Left);
+                System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("TextBox", System.Windows.Forms.HorizontalAlignment.Left);
 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { this.propName, this.Value });
-            {
-                listViewGroup1.Header = "共通";
-                listViewGroup1.Name = "CommonGroup";
-                listViewGroup2.Header = "Button";
-                listViewGroup2.Name = "ButtonGroup";
-                listViewGroup3.Header = "CheckBox";
-                listViewGroup3.Name = "CheckBoxGroup";
-                listViewGroup4.Header = "CheckedListBox";
-                listViewGroup4.Name = "CheckedListBoxGroup";
-                listViewGroup5.Header = "DateTimePicker";
-                listViewGroup5.Name = "DateTimePickerGroup";
-                listViewGroup6.Header = "Label";
-                listViewGroup6.Name = "LabelGroup";
-                listViewGroup7.Header = "ListBox";
-                listViewGroup7.Name = "ListBoxGroup";
-                listViewGroup8.Header = "PictureBox";
-                listViewGroup8.Name = "PictureBoxGroup";
-                listViewGroup9.Header = "ProgressBar";
-                listViewGroup9.Name = "ProgressBarGroup";
-                listViewGroup10.Header = "RadioButton";
-                listViewGroup10.Name = "RadioButtonGroup";
-                listViewGroup11.Header = "RichTextBox";
-                listViewGroup11.Name = "RichTextBoxGroup";
-                listViewGroup12.Header = "TextBox";
-                listViewGroup12.Name = "TextBoxGroup";
-            }
+                this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { this.propName, this.Value });
+                {
+                    listViewGroup1.Header = "共通";
+                    listViewGroup1.Name = "CommonGroup";
+                    listViewGroup2.Header = "Button";
+                    listViewGroup2.Name = "ButtonGroup";
+                    listViewGroup3.Header = "CheckBox";
+                    listViewGroup3.Name = "CheckBoxGroup";
+                    listViewGroup4.Header = "CheckedListBox";
+                    listViewGroup4.Name = "CheckedListBoxGroup";
+                    listViewGroup5.Header = "DateTimePicker";
+                    listViewGroup5.Name = "DateTimePickerGroup";
+                    listViewGroup6.Header = "Label";
+                    listViewGroup6.Name = "LabelGroup";
+                    listViewGroup7.Header = "ListBox";
+                    listViewGroup7.Name = "ListBoxGroup";
+                    listViewGroup8.Header = "PictureBox";
+                    listViewGroup8.Name = "PictureBoxGroup";
+                    listViewGroup9.Header = "ProgressBar";
+                    listViewGroup9.Name = "ProgressBarGroup";
+                    listViewGroup10.Header = "RadioButton";
+                    listViewGroup10.Name = "RadioButtonGroup";
+                    listViewGroup11.Header = "RichTextBox";
+                    listViewGroup11.Name = "RichTextBoxGroup";
+                    listViewGroup12.Header = "TextBox";
+                    listViewGroup12.Name = "TextBoxGroup";
+                }
 
-            this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+                this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
                 listViewGroup1,
                 listViewGroup2,
                 listViewGroup3,
@@ -422,53 +425,58 @@ namespace GUIBuilderProtoCSharp {
                 listViewGroup10,
                 listViewGroup11,
                 listViewGroup12});
-            listView1.Enabled = (control == null ? false : true);
-            PropertiesFactory common = new ControlProperties();
-            for (int i = 0; i < common.Count; i++) { // 共通のプロパティ
-                System.Reflection.PropertyInfo? property;
-                string[] pairs;
-                if (control == null) {
-                    pairs = new string[] { common.GetProperty(i) };
-                } else {
-                    try {
-                        property = UserControl.GetSelectedControlType().GetProperty(common.GetProperty(i));
-                        pairs = new string[] { common.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
-                    } catch (NullReferenceException) {
-                        pairs = new string[] { common.GetProperty(i), "null" };
+                listView1.Enabled = (control == null ? false : true);
+                PropertiesFactory common = new ControlProperties();
+                for (int i = 0; i < common.Count; i++) { // 共通のプロパティ
+                    System.Reflection.PropertyInfo? property;
+                    string[] pairs;
+                    if (control == null) {
+                        pairs = new string[] { common.GetProperty(i) };
+                    } else {
+                        try {
+                            property = UserControl.GetSelectedControlType().GetProperty(common.GetProperty(i));
+                            pairs = new string[] { common.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
+                        } catch (NullReferenceException) {
+                            pairs = new string[] { common.GetProperty(i), "null" };
+                        } catch (IndexOutOfRangeException) {
+                            pairs = new string[] { common.GetProperty(i), "null" };
+                        }
                     }
+                    ListViewItem item = new ListViewItem(pairs);
+                    listView1.Items.Add(item);
+                    item.Group = listViewGroup1;
                 }
-                ListViewItem item = new ListViewItem(pairs);
-                listView1.Items.Add(item);
-                item.Group = listViewGroup1;
-            }
-            PropertiesFactory? component = null;
-            ListViewGroup? group = null;
-            switch (UserControl.GetSelectedControl()) {
-                case UserButton ub:
-                    component = new ButtonProperties();
-                    group = listViewGroup2;
-                    break;
-                case null:
-                    return;
-                default:
-                    throw new NotImplementedException();
-            }
-            for (int i = 0; i < component.Count; i++) { // 各GUI部品に応じたプロパティ
-                System.Reflection.PropertyInfo? property;
-                string[] pairs;
-                if (control == null) {
-                    pairs = new string[] { component.GetProperty(i) };
-                } else {
-                    try {
-                        property = UserControl.GetSelectedControlType().GetProperty(component.GetProperty(i));
-                        pairs = new string[] { component.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
-                    } catch (NullReferenceException) {
-                        pairs = new string[] { component.GetProperty(i), "null" };
+                PropertiesFactory? component = null;
+                ListViewGroup? group = null;
+                switch (UserControl.GetSelectedControl()) {
+                    case UserButton ub:
+                        component = new ButtonProperties();
+                        group = listViewGroup2;
+                        break;
+                    case null:
+                        return;
+                    default:
+                        throw new NotImplementedException();
+                }
+                for (int i = 0; i < component.Count; i++) { // 各GUI部品に応じたプロパティ
+                    System.Reflection.PropertyInfo? property;
+                    string[] pairs;
+                    if (control == null) {
+                        pairs = new string[] { component.GetProperty(i) };
+                    } else {
+                        try {
+                            property = UserControl.GetSelectedControlType().GetProperty(component.GetProperty(i));
+                            pairs = new string[] { component.GetProperty(i), property.GetValue(f2.Controls.Find(control.Name, true)[0]).ToString() };
+                        } catch (NullReferenceException) {
+                            pairs = new string[] { component.GetProperty(i), "null" };
+                        } catch (IndexOutOfRangeException) {
+                            pairs = new string[] { common.GetProperty(i), "null" };
+                        }
                     }
+                    ListViewItem item = new ListViewItem(pairs);
+                    listView1.Items.Add(item);
+                    item.Group = group;
                 }
-                ListViewItem item = new ListViewItem(pairs);
-                listView1.Items.Add(item);
-                item.Group = group;
             }
         }
 
@@ -634,8 +642,8 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public void SetValueFromListBox(Control? control, System.Reflection.PropertyInfo? propName, object? value) {
-            propName.SetValue(control, value);
-            propName.SetValue(UserControl.FindPreview(control), value);
+            propName?.SetValue(UserControl.FindPreview(control), value);
+            propName?.SetValue(control, value);
         }
         public void SetValueFromListBox(Control? control, string? propName, object? value) {
             System.Reflection.PropertyInfo property = UserControl.GetSelectedControlType().GetProperty(propName);
@@ -644,6 +652,40 @@ namespace GUIBuilderProtoCSharp {
                 Enum.TryParse(property.PropertyType, value.ToString(), out value);
             }
             SetValueFromListBox(control, property, Convert.ChangeType(value, property.PropertyType));
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
+            List<object> before = new List<object>() { e.OldValue };
+            List<object> after = new List<object>() { e.ChangedItem.Value };
+            System.Reflection.PropertyInfo? property = propertyGrid1.SelectedObject.GetType().GetProperty(e.ChangedItem.Label);
+            if (propertyGrid1.SelectedObject.GetType().BaseType == typeof(UserForm)) {
+                undo.Push(new Modify(Modify.OperationCode.Modify, (Form)propertyGrid1.SelectedObject, before, after, property));
+            } else {
+                Control selecting = UserControl.GetSelectedControl();
+                Control? previewControl = null;
+                if (property?.Name == "Name") {
+                    previewControl = f3.Controls.Find(e.OldValue.ToString(), true)[0];
+                    int cnt = 0;
+                    for (int i = 0; i < f2.Controls.Count; i++) {
+                        // デザイン側のFormでName被りが無いか検証
+                        if (f2.Controls[i].Name.GetHashCode() == e.ChangedItem.Value.GetHashCode()) {
+                            cnt++;
+                        }
+                        if (cnt > 1) {
+                            MessageBox.Show($"名前 {f2.Controls[i].Name} は別のコンポーネントによって既に使用されています。", DESIGNER, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            ((Control)((PropertyGrid)s).SelectedObject).Name = e.OldValue.ToString();
+                            ((PropertyGrid)s).SelectedObject = ((PropertyGrid)s).SelectedObject;
+                            return;
+                        }
+                    }
+                } else
+                    previewControl = f3.Controls.Find(selecting.Name, true)[0];
+                Type? returnType = property?.PropertyType;
+                SetValueFromListBox(previewControl, property, e.ChangedItem.Value);
+                undo.Push(new Modify(Modify.OperationCode.Modify, propertyGrid1.SelectedObject, selecting.FindForm(), before, after, property));
+            }
+            redo.Clear();
+            Modify.Check(undo, redo);
         }
     }
 }

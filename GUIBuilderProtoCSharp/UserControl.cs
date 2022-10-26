@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GUIBuilderProtoCSharp {
-    internal class UserControl : Control {
+    internal partial class UserControl : Control {
         private static Point p_begin; // ドラッグ開始時のマウス座標(デザイナーウィンドウ左上基準)
         private static bool l_click; // 左クリックしているときtrue
         private static bool moving; // コントロールを動かしているときtrue
@@ -39,7 +39,7 @@ namespace GUIBuilderProtoCSharp {
             try {
                 previewControl = Form1.f3.Controls.Find(((Control)m.TargetControl).Name, true)[0]; // Formの数を複数扱う場合は、変える必要がある
             } catch (IndexOutOfRangeException) {
-            }
+            } catch (NullReferenceException) { }
             foreach (var item in operations) {
                 switch (item) {
                     case Point p:
@@ -262,10 +262,16 @@ namespace GUIBuilderProtoCSharp {
         }
         internal static void UserControl_MouseUp(object sender, MouseEventArgs e) {
             if (moving || resizing) {
+                System.Reflection.PropertyInfo? propertyInfo = null;
+                if (resizing) {
+                    propertyInfo = ((Control)sender).GetType().GetProperty("Size");
+                } else {
+                    propertyInfo = ((Control)sender).GetType().GetProperty("Location");
+                }
                 if (originLocation != ((Control)sender).Location || originSize != ((Control)sender).Size) {
                     List<object> before = new List<object> { originLocation, originSize };
                     List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
-                    Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after));
+                    Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after, propertyInfo));
                     Form1.redo.Clear();
                     Form1.f1.SetPropView((Control)sender);
                 }
@@ -372,7 +378,7 @@ namespace GUIBuilderProtoCSharp {
     }
 
 
-    internal class UserButton : Button {
+    internal partial class UserButton : Button {
         //static int num = 0;
         internal static List<UserButton>? UserButtons = new List<UserButton>();
 

@@ -41,6 +41,7 @@
             this.Text = "Form";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
             this.LocationChanged += new System.EventHandler(this.Form2_LocationChanged);
+            this.Click += new System.EventHandler(this.Form2_Click);
             this.Resize += new System.EventHandler(this.Form2_Resize);
             this.ResumeLayout(false);
 

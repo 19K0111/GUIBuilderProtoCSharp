@@ -144,6 +144,8 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.splitter3 = new System.Windows.Forms.Splitter();
             this.statusStrip1.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -840,6 +842,7 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(272, 506);
             this.panel1.TabIndex = 15;
+            this.panel1.Visible = false;
             // 
             // numericUpDown1
             // 
@@ -901,16 +904,37 @@
             this.splitter2.Size = new System.Drawing.Size(3, 506);
             this.splitter2.TabIndex = 17;
             this.splitter2.TabStop = false;
+            this.splitter2.Visible = false;
             // 
             // colorDialog1
             // 
             this.colorDialog1.AnyColor = true;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.propertyGrid1.Location = new System.Drawing.Point(556, 49);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(306, 506);
+            this.propertyGrid1.TabIndex = 19;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+            // 
+            // splitter3
+            // 
+            this.splitter3.Dock = System.Windows.Forms.DockStyle.Right;
+            this.splitter3.Location = new System.Drawing.Point(553, 49);
+            this.splitter3.Name = "splitter3";
+            this.splitter3.Size = new System.Drawing.Size(3, 506);
+            this.splitter3.TabIndex = 21;
+            this.splitter3.TabStop = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1137, 577);
+            this.Controls.Add(this.splitter3);
+            this.Controls.Add(this.propertyGrid1);
             this.Controls.Add(this.splitter2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeView1);
@@ -1012,5 +1036,7 @@
         private ComboBox comboBox1;
         private NumericUpDown numericUpDown1;
         private ColorDialog colorDialog1;
+        private Splitter splitter3;
+        internal PropertyGrid propertyGrid1;
     }
 }

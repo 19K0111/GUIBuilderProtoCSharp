@@ -37,5 +37,9 @@ namespace GUIBuilderProtoCSharp
             Form1.f1.toolStripStatusLabel1.Text = $"サイズ：{this.Size.Width} x {this.Size.Height}";
             System.Diagnostics.Debug.WriteLine($"Form座標：({Location.X}, {Location.Y})");
         }
+
+        private void Form2_Click(object sender, EventArgs e) {
+            Form1.f1.propertyGrid1.SelectedObject = Form1.f3;
+        }
     }
 }

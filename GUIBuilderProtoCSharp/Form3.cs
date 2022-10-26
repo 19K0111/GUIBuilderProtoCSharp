@@ -8,12 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GUIBuilderProtoCSharp
-{
-    public partial class Form3 : Form
-    {
-        public Form3()
-        {
+namespace GUIBuilderProtoCSharp {
+    public partial class Form3 : UserForm {
+        public Form3() {
             InitializeComponent();
         }
     }
