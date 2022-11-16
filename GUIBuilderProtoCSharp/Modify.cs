@@ -14,6 +14,12 @@ namespace GUIBuilderProtoCSharp {
             get; set;
         }
         /// <summary>
+        /// 操作対象のプレビューフォーム
+        /// </summary>
+        public Form TargetPreviewForm {
+            get; set;
+        }
+        /// <summary>
         /// 変更対象のコントロール
         /// </summary>
         public object TargetControl {
@@ -74,12 +80,13 @@ namespace GUIBuilderProtoCSharp {
             PropertyInfo = propertyInfo;
         }
 
-        public Modify(/*string type,*/ OperationCode operation, Form parentForm, List<object> before, List<object> after, System.Reflection.PropertyInfo? propertyInfo = null) {
+        public Modify(/*string type,*/ OperationCode operation, Form parentForm, Form previewForm, List<object> before, List<object> after, System.Reflection.PropertyInfo? propertyInfo = null) {
             ClassName = parentForm.GetType().Name;
             Operation = operation;
             // TargetControl = control;
             // PreviewControl = UserControl.FindPreview((Control)control);
             TargetForm = parentForm;
+            TargetPreviewForm = previewForm;
             Before = before;
             After = after;
             PropertyInfo = propertyInfo;
@@ -139,7 +146,7 @@ namespace GUIBuilderProtoCSharp {
                         case UserButton userButton:
                             UserButton.Add(userButton);
                             userButton.BringToFront();
-                            UserButton.UserButtons[(int)m.Before[0]] = userButton;
+                            // UserButton.UserButtons[(int)m.Before[0]] = userButton;
                             List<object> op = new List<object> { op_code };
                             UserControl.Sync(m, op_code);
                             break;
@@ -183,7 +190,12 @@ namespace GUIBuilderProtoCSharp {
                         break;
                     default:
                         if (m.TargetControl == null) {
+                            // Formのプロパティの変更
                             m.PropertyInfo.SetValue(m.TargetForm, item);
+                            m.PropertyInfo.SetValue(m.TargetPreviewForm, item);
+                            if (m.PropertyInfo.Name == "Text") {
+                                Form1.f2.Text += " - デザイン";
+                            }
                         } else {
                             Form1.f1.SetValueFromListBox((Control)m.TargetControl, m.PropertyInfo, item);
                         }
@@ -205,11 +217,24 @@ namespace GUIBuilderProtoCSharp {
                 Modify top = undoStack.Peek();
                 if (top.TargetControl == null) {
                     // Formのプロパティを変更
-                    stripText = top.TargetForm.Name;
+                    stripText = $"{top.TargetForm.Name}の{top.PropertyInfo.Name}";
                 } else if (top.TargetControl.GetType() == typeof(Form)) {
                     stripText = ((Form)top.TargetControl).Name;
                 } else {
-                    stripText = $"{((Control)top.TargetControl).Name}の{top.PropertyInfo.Name}";
+                    try {
+                        stripText = $"{((Control)top.TargetControl).Name}の{top.PropertyInfo.Name}";
+                    } catch (NullReferenceException) {
+                        switch (top.Operation) {
+                            case OperationCode.Create:
+                                stripText = $"{((Control)top.TargetControl).Name}の作成";
+                                break;
+                            case OperationCode.Delete:
+                                stripText = $"{((Control)top.TargetControl).Name}の削除";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
                 Form1.f1.undoToolStripButton.Text = $"{stripText} 元に戻す";
             }
@@ -224,11 +249,24 @@ namespace GUIBuilderProtoCSharp {
                 Modify top = redoStack.Peek();
                 if (top.TargetControl == null) {
                     // Formのプロパティを変更
-                    stripText = top.TargetForm.Name;
+                    stripText = $"{top.TargetForm.Name}の{top.PropertyInfo.Name}";
                 } else if (top.TargetControl.GetType() == typeof(Form)) {
                     stripText = ((Form)top.TargetControl).Name;
                 } else {
-                    stripText = $"{((Control)top.TargetControl).Name}の{top.PropertyInfo.Name}";
+                    try {
+                        stripText = $"{((Control)top.TargetControl).Name}の{top.PropertyInfo.Name}";
+                    } catch (NullReferenceException) {
+                        switch (top.Operation) {
+                            case OperationCode.Create:
+                                stripText = $"{((Control)top.TargetControl).Name}の作成";
+                                break;
+                            case OperationCode.Delete:
+                                stripText = $"{((Control)top.TargetControl).Name}の削除";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
                 Form1.f1.redoToolStripButton.Text = $"{stripText} やり直し";
             }

@@ -38,7 +38,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form2";
-            this.Text = "Form";
+            this.Text = "Form - デザイン";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
             this.LocationChanged += new System.EventHandler(this.Form2_LocationChanged);
             this.Click += new System.EventHandler(this.Form2_Click);

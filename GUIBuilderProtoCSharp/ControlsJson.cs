@@ -6,119 +6,187 @@ using System.Text.Json.Serialization;
 
 namespace GUIBuilderProtoCSharp {
     internal class ControlsJson {
-        [JsonPropertyName("type")]
-        public string Type {
-            get; set;
-        }
+        public string ControlTypeName { get; set; }
 
-        [JsonPropertyName("anchor")]
-        public string Anchor {
-            get; set;
-        }
+        public int Index { get; set; }
 
-        [JsonPropertyName("autoellipsis")]
-        public bool AutoEllipsis {
-            get; set;
-        }
+        public string Name { get; set; }
 
-        [JsonPropertyName("back-color")]
-        public int[] BackColor {
-            get; set;
-        }
+        public object Tag { get; set; }
 
-        [JsonPropertyName("bg-image")]
-        public string BackgroundImage {
-            get; set;
-        }
+        public bool AutoEllipsis { get; set; }
 
-        [JsonPropertyName("bg-image-layout")]
-        public string BackgroundImageLayout {
-            get; set;
-        }
+        public bool Enabled { get; set; }
 
-        [JsonPropertyName("dock")]
-        public string Dock {
-            get; set;
-        }
+        public int TabIndex { get; set; }
 
-        [JsonPropertyName("enabled")]
-        public bool Enabled {
-            get; set;
-        }
+        public bool TabStop { get; set; }
 
-        [JsonPropertyName("font")]
-        public string[] Font {
-            get; set;
-        }
+        public bool Visible { get; set; }
 
-        [JsonPropertyName("font-height")]
-        public int FontHeight {
-            get; set;
-        }
+        public AnchorStyles Anchor { get; set; }
 
-        [JsonPropertyName("fore-color")]
-        public int[] ForeColor {
-            get; set;
-        }
+        public bool AutoSize { get; set; }
 
-        [JsonPropertyName("height")]
-        public int Height {
-            get; set;
-        }
+        public AutoSizeMode AutoSizeMode { get; set; }
 
-        [JsonPropertyName("image")]
-        public string Image {
-            get; set;
-        }
+        public DockStyle Dock { get; set; }
 
-        [JsonPropertyName("image-align")]
-        public string ImageAlign {
-            get; set;
-        }
+        public Point Location { get; set; }
 
-        [JsonPropertyName("location")]
-        public int[] Location {
-            get; set;
-        }
+        public Padding Margin { get; set; }
 
-        [JsonPropertyName("margin")]
-        public int[] Margin {
-            get; set;
-        }
+        public Size MaximumSize { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name {
-            get; set;
-        }
+        public Size MinimumSize { get; set; }
 
-        [JsonPropertyName("padding")]
-        public int[] Padding {
-            get; set;
-        }
+        public Padding Padding { get; set; }
 
-        [JsonPropertyName("size")]
-        public int[] Size {
-            get; set;
-        }
+        public Size Size { get; set; }
 
-        [JsonPropertyName("text")]
-        public string Text {
-            get; set;
-        }
+        public Color BackColor { get; set; }
 
-        [JsonPropertyName("text-align")]
-        public string TextAlign {
-            get; set;
-        }
+        public Image BackgroundImage { get; set; }
 
-        [JsonPropertyName("visible")]
-        public bool Visible {
-            get; set;
-        }
+        public ImageLayout BackgroundImageLayout { get; set; }
 
-        [JsonPropertyName("width")]
-        public int Width {
-            get; set;
-        }
+        public Cursor Cursor { get; set; }
+
+        public FlatButtonAppearance FlatAppearance { get; set; }
+
+        public FlatStyle FlatStyle { get; set; }
+
+        public Font Font { get; set; }
+
+        public Color ForeColor { get; set; }
+
+        public Image Image { get; set; }
+
+        public ContentAlignment ImageAlign { get; set; }
+
+        public string Text { get; set; }
+
+        public ContentAlignment TextAlign { get; set; }
+
+        public TextImageRelation TextImageRelation { get; set; }
+
+        public bool UseMnemonic { get; set; }
+
+        public bool UseVisualStyleBackColor { get; set; }
+
+        //[JsonPropertyName("type")]
+        //public string ControlTypeName {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("anchor")]
+        //public string Anchor {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("autoellipsis")]
+        //public bool AutoEllipsis {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("back-color")]
+        //public int[] BackColor {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("bg-image")]
+        //public string BackgroundImage {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("bg-image-layout")]
+        //public string BackgroundImageLayout {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("dock")]
+        //public string Dock {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("enabled")]
+        //public bool Enabled {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("font")]
+        //public string[] Font {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("font-height")]
+        //public int FontHeight {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("fore-color")]
+        //public int[] ForeColor {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("height")]
+        //public int Height {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("image")]
+        //public string Image {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("image-align")]
+        //public string ImageAlign {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("location")]
+        //public int[] Location {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("margin")]
+        //public int[] Margin {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("name")]
+        //public string Name {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("padding")]
+        //public int[] Padding {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("size")]
+        //public int[] Size {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("text")]
+        //public string Text {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("text-align")]
+        //public string TextAlign {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("visible")]
+        //public bool Visible {
+        //    get; set;
+        //}
+
+        //[JsonPropertyName("width")]
+        //public int Width {
+        //    get; set;
+        //}
     }
 }

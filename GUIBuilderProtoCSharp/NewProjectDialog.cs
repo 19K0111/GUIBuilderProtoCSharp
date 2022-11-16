@@ -34,8 +34,10 @@ namespace GUIBuilderProtoCSharp {
         }
 
         private void button2_Click(object sender, EventArgs e) {
+            Form1.f1.Init();
             Form1.workingDirectory = textBox2.Text + "\\" + textBox1.Text;
             Directory.CreateDirectory(Form1.workingDirectory);
+            Directory.CreateDirectory($"{Form1.workingDirectory}\\Resources");
             StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + textBox1.Text + ProjectJson.Extension);
             Form1.pj = new ProjectJson("Form");
             sw.Write(JsonSerializer.Serialize(Form1.pj, ProjectJson.options));
@@ -49,7 +51,6 @@ namespace GUIBuilderProtoCSharp {
             textBox1.Text = "";
             textBox2.Text = "";
             button2.Enabled = false;
-            Form1.f1.Init();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e) {

@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0-1.final" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1340-prerelease" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 

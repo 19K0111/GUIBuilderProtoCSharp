@@ -13,11 +13,23 @@ namespace GUIBuilderProtoCSharp {
             // シリアライズオプション
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
             WriteIndented = true,
+            IgnoreReadOnlyProperties = true, // 読み取り専用プロパティを無視する
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault, // 規定値とnullのプロパティを無視する
+            ReferenceHandler = ReferenceHandler.IgnoreCycles, // ループ参照を無視する
+            IgnoreReadOnlyFields = true,
 
             // デシリアライズオプション
             PropertyNameCaseInsensitive = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
             AllowTrailingCommas = true,
+            Converters = {new CursorJsonConverter(), new PointJsonConverter(), new IconJsonConverter(), new BindingContextJsonConverter(), new FontJsonConverter(), 
+                new WindowTargetJsonConverter(), new ColorJsonConverter(), new ImageJsonConverter()},
+        };
+        internal static Newtonsoft.Json.JsonSerializerSettings newton_options = new Newtonsoft.Json.JsonSerializerSettings() {
+            DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore, // 規定値プロパティを無視する
+            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, // nullのプロパティを無視する
+            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, // ループ参照を無視する
+            MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,  // 一覧にないプロパティ無視する
         };
         public static string Extension {
             get {

@@ -20,5 +20,16 @@ namespace GUIBuilderProtoCSharp
                 property.p2.SetValue(dest, property.p1.GetValue(src));
             return dest;
         }
+
+        public static T ControlCopy<T>(T origin, T target) {
+            for (int i = 0; i < typeof(ControlsJson).GetProperties().Length; i++) {
+                string propName = typeof(ControlsJson).GetProperties()[i].Name;
+                try {
+                    target.GetType().GetProperty(propName).SetValue(target, origin.GetType().GetProperty(propName).GetValue(origin));
+                }catch (ArgumentException) {
+                } 
+            }
+            return target;
+        }
     }
 }

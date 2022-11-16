@@ -84,9 +84,9 @@ namespace GUIBuilderProtoCSharp {
 
             //f2 = new Form2();
             //f3 = new Form3();
-            f2.Text = "Form";
+            f2.Text = "Form - デザイン";
             f2.Size = new Size(300, 300);
-            f3.Text = "Form - プレビュー";
+            f3.Text = "Form";
             int j = f2.Controls.Count;
             f2.Controls.Clear();
             f3.Controls.Clear();
@@ -241,7 +241,8 @@ namespace GUIBuilderProtoCSharp {
                 string jsonString = sr.ReadToEnd();
                 pj = System.Text.Json.JsonSerializer.Deserialize<ProjectJson>(jsonString, ProjectJson.options);
                 pj.Name = new string[pj.Designer.Length];
-                pj.Name[0] = Path.GetFileNameWithoutExtension(openFileDialog1.FileName);
+                // pj.Name[0] = Path.GetFileNameWithoutExtension(openFileDialog1.FileName);
+                pj.Name[0] = pj.Code[0].Split('.')[0];
                 System.Diagnostics.Debug.WriteLine(pj);
                 sr.Close();
 
@@ -255,45 +256,52 @@ namespace GUIBuilderProtoCSharp {
             DesignJson dj = new DesignJson(pj);
             dj.Name = f2.Name;
             dj.Text = f2.Text;
-            dj.Size = new int[2] { f2.Size.Width, f2.Size.Height };
+            dj.Size = new(f2.Size.Width, f2.Size.Height);
+            // dj.Size = new int[2] { f2.Size.Width, f2.Size.Height };
+            // dj.Controls = new();
             dj.Controls = new List<ControlsJson>();
             for (int i = f2.Controls.Count - 1; i >= 0; i--) {
                 System.Diagnostics.Debug.WriteLine(Form1.f2.Controls[i].ToString());
-                ControlsJson cj = new ControlsJson() {
-                    Type = f2.Controls[i].GetType().Name,
-                    Name = f2.Controls[i].Name,
-                    Text = f2.Controls[i].Text,
-                    Size = new int[2] { f2.Controls[i].Size.Width, f2.Controls[i].Size.Height },
-                    Location = new int[2] { f2.Controls[i].Location.X, f2.Controls[i].Location.Y }
+                ControlsJson cj = new ControlsJson();
+                //ControlsJson cj = new ControlsJson() {
+                //    ControlTypeName= f2.Controls[i].GetType().Name,
+                //    Name = f2.Controls[i].Name,
+                //    Text = f2.Controls[i].Text,
+                //    Size = new Size( f2.Controls[i].Size.Width, f2.Controls[i].Size.Height ),
+                //    //Size = new int[2] { f2.Controls[i].Size.Width, f2.Controls[i].Size.Height },
+                //    Location = new Point(f2.Controls[i].Location.X, f2.Controls[i].Location.Y )
+                //    //Location = new int[2] { f2.Controls[i].Location.X, f2.Controls[i].Location.Y }
 
-                    //Anchor = f2.Controls[i].Anchor.ToString(),
-                    //AutoEllipsis = ((ButtonBase)f2.Controls[i]).AutoEllipsis,
-                    //BackColor = new int[3] { f2.Controls[i].BackColor.R, f2.Controls[i].BackColor.G, f2.Controls[i].BackColor.B },
-                    //BackgroundImage = f2.Controls[i].BackgroundImage.,
-                    //BackgroundImageLayout = f2.Controls[i].BackgroundImageLayout.ToString(),
-                    //Dock = f2.Controls[i].Dock.ToString(),
-                    //Enabled = f2.Controls[i].Enabled,
-                    //Font = f2.Controls[i].Font.ToString(),
-                    //FontHeight = f2.Controls[i].Font.Height,
-                    //ForeColor = new int[3] { f2.Controls[i].ForeColor.R, f2.Controls[i].ForeColor.G, f2.Controls[i].ForeColor.B },
-                    //Height = f2.Controls[i].Height,
-                    //Image = ((ButtonBase)f2.Controls[i]).Image.ToString(),
-                    //ImageAlign = ((ButtonBase)f2.Controls[i]).ImageAlign.ToString(),
-                    //Location = new int[2] { f2.Controls[i].Location.X, f2.Controls[i].Location.Y },
-                    //Margin = new int[4] { f2.Controls[i].Margin.Left, f2.Controls[i].Margin.Top, f2.Controls[i].Margin.Right, f2.Controls[i].Margin.Bottom },
-                    //Name = f2.Controls[i].Name,
-                    //Padding = new int[4] { f2.Controls[i].Padding.Left, f2.Controls[i].Padding.Top, f2.Controls[i].Padding.Right, f2.Controls[i].Padding.Bottom },
-                    //Size = new int[2] { f2.Controls[i].Size.Width, f2.Controls[i].Size.Height },
-                    //Text = f2.Controls[i].Text,
-                    //TextAlign = ((ButtonBase)f2.Controls[i]).TextAlign.ToString(),
-                    //Visible = f2.Controls[i].Visible,
-                    //Width = f2.Controls[i].Width,
+                //    //Anchor = f2.Controls[i].Anchor.ToString(),
+                //    //AutoEllipsis = ((ButtonBase)f2.Controls[i]).AutoEllipsis,
+                //    //BackColor = new int[3] { f2.Controls[i].BackColor.R, f2.Controls[i].BackColor.G, f2.Controls[i].BackColor.B },
+                //    //BackgroundImage = f2.Controls[i].BackgroundImage.,
+                //    //BackgroundImageLayout = f2.Controls[i].BackgroundImageLayout.ToString(),
+                //    //Dock = f2.Controls[i].Dock.ToString(),
+                //    //Enabled = f2.Controls[i].Enabled,
+                //    //Font = f2.Controls[i].Font.ToString(),
+                //    //FontHeight = f2.Controls[i].Font.Height,
+                //    //ForeColor = new int[3] { f2.Controls[i].ForeColor.R, f2.Controls[i].ForeColor.G, f2.Controls[i].ForeColor.B },
+                //    //Height = f2.Controls[i].Height,
+                //    //Image = ((ButtonBase)f2.Controls[i]).Image.ToString(),
+                //    //ImageAlign = ((ButtonBase)f2.Controls[i]).ImageAlign.ToString(),
+                //    //Location = new int[2] { f2.Controls[i].Location.X, f2.Controls[i].Location.Y },
+                //    //Margin = new int[4] { f2.Controls[i].Margin.Left, f2.Controls[i].Margin.Top, f2.Controls[i].Margin.Right, f2.Controls[i].Margin.Bottom },
+                //    //Name = f2.Controls[i].Name,
+                //    //Padding = new int[4] { f2.Controls[i].Padding.Left, f2.Controls[i].Padding.Top, f2.Controls[i].Padding.Right, f2.Controls[i].Padding.Bottom },
+                //    //Size = new int[2] { f2.Controls[i].Size.Width, f2.Controls[i].Size.Height },
+                //    //Text = f2.Controls[i].Text,
+                //    //TextAlign = ((ButtonBase)f2.Controls[i]).TextAlign.ToString(),
+                //    //Visible = f2.Controls[i].Visible,
+                //    //Width = f2.Controls[i].Width,
 
-                };
-                dj.Controls.Add(cj);
+                //};
+                //dj.Controls.Add(cj);
             }
             StreamWriter sw = new StreamWriter(workingDirectory + "\\" + pj.Name[0] + DesignJson.Extension);
-            sw.Write(System.Text.Json.JsonSerializer.Serialize(dj, ProjectJson.options));
+            // sw.Write(System.Text.Json.JsonSerializer.Serialize(dj, ProjectJson.options));
+            sw.Write(System.Text.Json.JsonSerializer.Serialize(f3, f3.GetType(), ProjectJson.options)); // FormクラスをSystem.Text.Jsonでシリアライズ
+            //sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(f3,Newtonsoft.Json.Formatting.Indented, ProjectJson.newton_options)); // FormクラスをNewtonsoft.Jsonでシリアライズ
             sw.Close();
         }
 
@@ -311,17 +319,129 @@ namespace GUIBuilderProtoCSharp {
         public void LoadDesign() {
             StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + pj.Designer[0]);
             string jsonString = sr.ReadToEnd();
+
+            //try {
+            //    using (Form3 dj = System.Text.Json.JsonSerializer.Deserialize<Form3>(jsonString, ProjectJson.options)) {  // System.Text.Json
+            //        f3 = dj;
+            //    }
+            //} catch (Exception) { }
+
+            DesignJson dj = System.Text.Json.JsonSerializer.Deserialize<DesignJson>(jsonString, ProjectJson.options);
+            for (int j = 0; j < dj.GetType().GetProperties().Length; j++) {
+                string propName = dj.GetType().GetProperties()[j].Name;
+                try {
+                    f2.GetType().GetProperty(propName).SetValue(f2, dj.GetType().GetProperties()[j].GetValue(dj));
+                    f3.GetType().GetProperty(propName).SetValue(f3, dj.GetType().GetProperties()[j].GetValue(dj));
+                } catch (NullReferenceException) {
+                } catch (ArgumentException) {
+                }
+            }
+            // Fontを変えてからSizeを変えないとSizeが正しく復元されない
+            f2.GetType().GetProperty("Size").SetValue(f2, dj.GetType().GetProperty("Size").GetValue(dj));
+            f3.GetType().GetProperty("Size").SetValue(f3, dj.GetType().GetProperty("Size").GetValue(dj));
+            f2.Text = dj.Text + " - デザイン";
+
+            // TODO: dj.Controlsをforで回してControlTypeNameによってポリモーフィズムなインスタンスを作成
+            try {
+                for (int i = 0; i < dj.Controls.Count; i++) {
+                    Control c;
+                    Control c2;
+                    if (dj.Controls[i].ControlTypeName == "UserButton") {
+                        c = new UserButton();
+                    } else {
+                        throw new NotImplementedException();
+                    }
+                    for (int j = 0; j < typeof(ControlsJson).GetProperties().Length; j++) {
+                        try {
+                            string propName = typeof(ControlsJson).GetProperties()[j].Name;
+                            var cjValue = dj.Controls[i].GetType().GetProperty(propName).GetValue(dj.Controls[i]);
+                            c.GetType().GetProperty(propName).SetValue(c, cjValue);
+                        } catch (ArgumentException) { }
+                    }
+                    if (dj.Controls[i].ControlTypeName == "UserButton") {
+                        c2 = new UserButton((UserButton)c);
+                    } else {
+                        throw new NotImplementedException();
+                    }
+                    // 移動操作のためにデザイン側のコントロールを制御
+                    c.Enabled = true;
+                    c.Visible = true;
+                    f2.Controls.Add(c);
+                    f3.Controls.Add(c2);
+                }
+            } catch (NullReferenceException) { } // 空のフォームの場合
+
+            //try {
+            //    dj.Dispose();
+            //} catch (NullReferenceException) { }
+            //f3 = dj;
+            // Form3 dj = Newtonsoft.Json.JsonConvert.DeserializeObject<Form3>(jsonString, ProjectJson.newton_options); // Newtonsoft.Json
+            //DesignJson dj = Newtonsoft.Json.JsonConvert.DeserializeObject<DesignJson>(jsonString, ProjectJson.newton_options);
+            //f2.Name = dj.Name;
+            //f2.Text = dj.Text + " - デザイン";
+            //f3.Text = dj.Text;
+            //f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            //f3.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            //f2.Location = new Point(10, 10);
+            //f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
+            //f4.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y + f3.Size.Height);
+            //foreach (var item in dj.Controls) {
+            //    switch (item.Type) {
+            //        case nameof(UserButton):
+            //            UserButton ub = new UserButton();
+            //            // 一度Control型でプロパティを設定し、あとでUserButton等にキャストする方法を試す
+            //            //ub.Anchor = (AnchorStyles)Enum.Parse(typeof(AnchorStyles), item.Anchor); // string
+            //            //ub.AutoEllipsis = item.AutoEllipsis;
+            //            //ub.BackColor = Color.FromArgb(item.BackColor[0], item.BackColor[1], item.BackColor[2]);
+            //            //ub.BackgroundImage = Image.FromFile(item.BackgroundImage);
+            //            //ub.BackgroundImageLayout = (ImageLayout)Enum.Parse(typeof(ImageLayout), item.BackgroundImageLayout);
+            //            //ub.Dock = (DockStyle)Enum.Parse(typeof(DockStyle), item.Dock);
+            //            //ub.Enabled = item.Enabled;
+            //            //ub.Font = new Font(item.Font[0], Single.Parse(item.Font[1])); // string[]
+            //            //// ub.FontHeight protectedプロパティのため設定不可
+            //            //ub.ForeColor = Color.FromArgb(item.ForeColor[0], item.ForeColor[1], item.ForeColor[2]);
+            //            //ub.Height = item.Height;
+            //            //ub.Image = Image.FromFile(item.Image);
+            //            //ub.ImageAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.ImageAlign);
+            //            ub.Location = new Point(item.Location[0], item.Location[1]);
+            //            //ub.Margin = new Padding(item.Margin[0], item.Margin[1], item.Margin[2], item.Margin[3]);
+            //            ub.Name = item.Name;
+            //            //ub.Padding = new Padding(item.Padding[0], item.Padding[1], item.Padding[2], item.Padding[3]);
+            //            ub.Size = new Size(new Point(item.Size[0], item.Size[1]));
+            //            ub.Text = item.Text;
+            //            //ub.TextAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.TextAlign);
+            //            //ub.Visible = item.Visible;
+            //            //ub.Width = item.Width;
+            //            f2.Controls.Add(ub);
+            //            UserButton ub2 = new UserButton(ub);
+            //            f3.Controls.Add(ub2);
+            //            UserButtons.Add(ub);
+            //            ub.BringToFront();
+            //            ub2.BringToFront();
+            //            break;
+            //        default:
+            //            throw (new NotImplementedException());
+            //    }
+            //}
+            sr.Close();
+        }
+
+        public void LoadDesign2() { // リフレクションを使わずにプロパティを設定する方法なので廃止
+            StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + pj.Designer[0]);
+            string jsonString = sr.ReadToEnd();
             DesignJson dj = System.Text.Json.JsonSerializer.Deserialize<DesignJson>(jsonString, ProjectJson.options);
             f2.Name = dj.Name;
-            f2.Text = dj.Text;
-            f3.Text = dj.Text + " - プレビュー";
-            f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
-            f3.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            f2.Text = dj.Text + " - デザイン";
+            f3.Text = dj.Text;
+            f2.Size = new Size(new Point(dj.Size.Width, dj.Size.Height));
+            f3.Size = new Size(new Point(dj.Size.Width, dj.Size.Height));
+            // f2.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
+            // f3.Size = new Size(new Point(dj.Size[0], dj.Size[1]));
             f2.Location = new Point(10, 10);
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
             f4.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y + f3.Size.Height);
             foreach (var item in dj.Controls) {
-                switch (item.Type) {
+                switch (item.ControlTypeName) {
                     case nameof(UserButton):
                         UserButton ub = new UserButton();
                         // 一度Control型でプロパティを設定し、あとでUserButton等にキャストする方法を試す
@@ -338,11 +458,11 @@ namespace GUIBuilderProtoCSharp {
                         //ub.Height = item.Height;
                         //ub.Image = Image.FromFile(item.Image);
                         //ub.ImageAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.ImageAlign);
-                        ub.Location = new Point(item.Location[0], item.Location[1]);
+                        ub.Location = new Point(item.Location.X, item.Location.Y);
                         //ub.Margin = new Padding(item.Margin[0], item.Margin[1], item.Margin[2], item.Margin[3]);
                         ub.Name = item.Name;
                         //ub.Padding = new Padding(item.Padding[0], item.Padding[1], item.Padding[2], item.Padding[3]);
-                        ub.Size = new Size(new Point(item.Size[0], item.Size[1]));
+                        ub.Size = new Size(new Point(item.Size.Width, item.Size.Height));
                         ub.Text = item.Text;
                         //ub.TextAlign = (ContentAlignment)Enum.Parse(typeof(ContentAlignment), item.TextAlign);
                         //ub.Visible = item.Visible;
@@ -659,7 +779,11 @@ namespace GUIBuilderProtoCSharp {
             List<object> after = new List<object>() { e.ChangedItem.Value };
             System.Reflection.PropertyInfo? property = propertyGrid1.SelectedObject.GetType().GetProperty(e.ChangedItem.Label);
             if (propertyGrid1.SelectedObject.GetType().BaseType == typeof(UserForm)) {
-                undo.Push(new Modify(Modify.OperationCode.Modify, (Form)propertyGrid1.SelectedObject, before, after, property));
+                f2.GetType().GetProperty(property.Name).SetValue(f2, f3.GetType().GetProperty(property.Name).GetValue(f3));
+                undo.Push(new Modify(Modify.OperationCode.Modify, (Form)propertyGrid1.SelectedObject, f2, before, after, property));
+                if (property?.Name == "Text") {
+                    f2.Text += " - デザイン";
+                }
             } else {
                 Control selecting = UserControl.GetSelectedControl();
                 Control? previewControl = null;
@@ -673,7 +797,14 @@ namespace GUIBuilderProtoCSharp {
                         }
                         if (cnt > 1) {
                             MessageBox.Show($"名前 {f2.Controls[i].Name} は別のコンポーネントによって既に使用されています。", DESIGNER, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            ((Control)((PropertyGrid)s).SelectedObject).Name = e.OldValue.ToString();
+                            Control duplicateName = ((Control)((PropertyGrid)s).SelectedObject);
+                            if (duplicateName.GetType() == typeof(UserButton)) {
+                                ((UserButton)duplicateName).Name = e.OldValue.ToString();
+                                UserButton.UpdateNameManageList();
+                            } else {
+                                throw new NotImplementedException();
+                            }
+                            //((Control)((PropertyGrid)s).SelectedObject).Name = e.OldValue.ToString();
                             ((PropertyGrid)s).SelectedObject = ((PropertyGrid)s).SelectedObject;
                             return;
                         }

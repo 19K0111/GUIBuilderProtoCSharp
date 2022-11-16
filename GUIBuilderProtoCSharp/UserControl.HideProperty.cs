@@ -160,7 +160,38 @@ namespace GUIBuilderProtoCSharp {
             set {
                 //AttributeCollection ac = TypeDescriptor.GetProperties(new UserButton())["Name"].Attributes;
                 //string da = ((DescriptionAttribute)TypeDescriptor.GetProperties(new UserButton())["Name"].Attributes[typeof(DescriptionAttribute)]).Description;
+                try {
+                    int before = int.Parse(base.Name.Replace(this.GetType().BaseType.Name, ""));
+                    nameManageList[before - 1] = false;
+                } catch (Exception) { }
+                try {
+                    int after = int.Parse(value.Replace(this.GetType().BaseType.Name, ""));
+                    nameManageList[after - 1] = true;
+                } catch (Exception) { }
                 base.Name = value;
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
+        public new Control Parent {
+            get {
+                return base.Parent;
+            }
+            set {
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
+        public IntPtr Handle {
+            get {
+                return base.Handle;
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
+        public AccessibleObject AccessibilityObject{
+            get {
+                return base.AccessibilityObject;
             }
         }
         #endregion

@@ -4,12 +4,22 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GUIBuilderProtoCSharp {
-    public class UserForm : Form {
+    public class UserForm : Form, ISerializable {
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
+            System.Reflection.PropertyInfo[] properties = typeof(UserForm).GetProperties();
+            for (int i = 0; i < properties.Length; i++) {
+                if (properties[i].Name != "Handle") {
+                    info.AddValue(properties[i].Name, properties[i]);
+                }
+            }
+        }
+
         #region 非表示プロパティ
         [Browsable(false)]
         public IButtonControl AcceptButton {
@@ -240,6 +250,23 @@ namespace GUIBuilderProtoCSharp {
                 base.UseWaitCursor = value;
             }
         }
+
+        [Browsable(false)]
+        public AnchorStyles Anchor {
+            get {
+                return base.Anchor;
+            }
+            set {
+                base.Anchor = value;
+            }
+        }
+
+        //[System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
+        //public IntPtr Handle {
+        //    get {
+        //        return base.Handle;
+        //    }
+        //}
         #endregion
     }
 }

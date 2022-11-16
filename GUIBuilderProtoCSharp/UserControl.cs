@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace GUIBuilderProtoCSharp {
     internal partial class UserControl : Control {
+        public const int BUFFER = 1024;
+
         private static Point p_begin; // ドラッグ開始時のマウス座標(デザイナーウィンドウ左上基準)
         private static bool l_click; // 左クリックしているときtrue
         private static bool moving; // コントロールを動かしているときtrue
@@ -18,7 +20,12 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
-        //internal static List<object> UserControls = new List<object>();
+        internal static List<object> userControls = new();
+        internal static List<object> UserControls {
+            get {
+                return userControls;
+            }
+        }
 
         public static void init() {
             l_click = false; // 左クリックしているときtrue
@@ -28,7 +35,7 @@ namespace GUIBuilderProtoCSharp {
             shift = false; // Shiftキーを押しているときtrue
             ctrl = false;
             selecting = null;
-            UserButton.UserButtons.Clear();
+            UserButton.Init();
         }
         public static Control FindPreview(Control design) {
             return Form1.f3.Controls.Find(design.Name, true)[0];
@@ -381,10 +388,11 @@ namespace GUIBuilderProtoCSharp {
     internal partial class UserButton : Button {
         //static int num = 0;
         internal static List<UserButton>? UserButtons = new List<UserButton>();
+        private static bool[] nameManageList = new bool[UserControl.BUFFER];
 
         public UserButton() {
             // コンストラクタ
-            this.Name = $"{GetType().BaseType.Name}{Count + 1}";
+            this.Name = $"{GetType().BaseType.Name}0"; // 仮にButton0とおく
             this.Location = new Point(0, 0);
             this.Size = new Size(75, 23);
             this.TabIndex = 0;
@@ -402,33 +410,73 @@ namespace GUIBuilderProtoCSharp {
             this.Enter += UserControl.UserControl_Enter;
             this.Leave += UserControl.UserControl_Leave;
 
-            for (int i = 0; i < UserButtons.Count; i++) {
+            for (int i = 0; i <= UserButtons.Count; i++) {
                 // Nameが重複しないようにする処理
-                if (UserButtons[i] != null) {
-                    if (UserButtons[i].Name == $"{GetType().BaseType.Name}{Count}") {
-
-                    }
-                } else {
+                if (!nameManageList[i]) {
                     this.Name = $"{GetType().BaseType.Name}{i + 1}";
-                    UserButtons[i] = this;
                     this.Text = this.Name;
-                    return;
+                    break;
                 }
-            }
-            UserButtons.Add(this);
+                //if (UserButtons[i] != null) {
+                //    if (UserButtons[i].Name == $"{GetType().BaseType.Name}{Count}") {
 
+                //    }
+                //} else {
+                //    this.Name = $"{GetType().BaseType.Name}{i + 1}";
+                //    UserButtons[i] = this;
+                //    this.Text = this.Name;
+                //    return;
+                //}
+            }
+            Add(this);
+
+            //for (int i = 0; i < UserButtons.Count; i++) {
+            //    // Nameが重複しないようにする処理
+            //    if (UserButtons[i] != null) {
+            //        try {
+            //            int hit = int.Parse(UserButtons[i].Name.Replace(GetType().BaseType.Name, ""));
+            //            nameManageList[hit - 1] = true;
+            //        } catch (FormatException) {
+            //            continue;
+            //        }
+            //    } else {
+            //        // this.Name = $"{GetType().BaseType.Name}{i + 1}";
+            //        // UserButtons[i] = this;
+            //        // this.Text = this.Name;
+            //        // return;
+            //    }
+            //}
+            //for (int i = 0; i < UserButtons.Count; i++) {
+            //    if (!nameManageList[i]) {
+            //        this.Name = $"{GetType().BaseType.Name}{i + 1}";
+            //        UserButtons[i] = this;
+            //        this.Text = this.Name;
+            //        nameManageList[i] = true;
+            //        UserButtons.Add(this);
+            //        return;
+            //    }
+            //}
+            //UserButtons.Add(this);
         }
 
         public UserButton(UserButton t) {
             // コピーコンストラクタ
-            this.Name = t.Name;
-            this.Location = t.Location;
-            this.Size = t.Size;
-            this.TabIndex = t.TabIndex;
-            this.Text = t.Text;
-            this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+            //this.Name = t.Name;
+            //this.Location = t.Location;
+            //this.Size = t.Size;
+            //this.TabIndex = t.TabIndex;
+            //this.Text = t.Text;
+            //this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+
+            PropertyCopier.ControlCopy(t, this);
 
             this.Click += UserButton_Click;
+        }
+
+        public static void Init() {
+            UserButton.UserButtons?.Clear();
+            nameManageList = new bool[UserControl.BUFFER];
+            UserControl.UserControls.Add(UserButton.UserButtons);
         }
 
         private void UserButton_Click(object? sender, EventArgs e) {
@@ -452,6 +500,7 @@ namespace GUIBuilderProtoCSharp {
             //}
         }
 
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
         public int Index {
             get {
                 return UserButtons.IndexOf(this);
@@ -463,7 +512,13 @@ namespace GUIBuilderProtoCSharp {
                 //return -1;
             }
             private set {
-                Index = value; ;
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public string ControlTypeName {
+            get {
+                return this.GetType().Name;
             }
         }
 
@@ -471,14 +526,31 @@ namespace GUIBuilderProtoCSharp {
             //Count--;
             foreach (var item in UserButton.UserButtons) {
                 if (item != null && item.Name == d.Name) {
-                    UserButtons[d.Index] = null;
+                    // UserButtons[d.Index] = null;
+                    UserButtons.Remove(item);
+                    try {
+                        nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = false;
+                    } catch (Exception) { }
                     break;
                 }
             }
         }
 
         public static void Add(UserButton d) {
+            UserButtons.Add(d);
+            try {
+                nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = true;
+            } catch (Exception) { }
+
             //Count++;
+        }
+
+        public static void UpdateNameManageList() {
+            foreach (var item in UserButtons) {
+            try {
+                nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
+            } catch (Exception) { }
+            }
         }
 
         //private Point p_begin;
