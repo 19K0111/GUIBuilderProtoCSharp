@@ -92,7 +92,7 @@ namespace GUIBuilderProtoCSharp {
             (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = "";
             IsChanged();
             try {
-                 Interpreter.Lang.Compile(richTextBox1.Text); // 自作の構文解析器
+                Interpreter.Lang.Compile(richTextBox1.Text); // 自作の構文解析器
                 // var result = await CSharpScript.EvaluateAsync(richTextBox1.Text, globals:Form1.f3); // Microsoft.CodeAnalysis.CSharp.Scriptingを使う
             } catch (Exception ex) {
                 (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
@@ -206,6 +206,11 @@ namespace GUIBuilderProtoCSharp {
                 }
             }
             timer1.Stop();
+        }
+
+        private void Form4_FormClosing(object sender, FormClosingEventArgs e) {
+            e.Cancel = true;
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }

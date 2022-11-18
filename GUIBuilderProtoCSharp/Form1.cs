@@ -797,9 +797,9 @@ namespace GUIBuilderProtoCSharp {
                         }
                         if (cnt > 1) {
                             MessageBox.Show($"名前 {f2.Controls[i].Name} は別のコンポーネントによって既に使用されています。", DESIGNER, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            Control duplicateName = ((Control)((PropertyGrid)s).SelectedObject);
-                            if (duplicateName.GetType() == typeof(UserButton)) {
-                                ((UserButton)duplicateName).Name = e.OldValue.ToString();
+                            Control duplicatedName = ((Control)((PropertyGrid)s).SelectedObject);
+                            if (duplicatedName.GetType() == typeof(UserButton)) {
+                                ((UserButton)duplicatedName).Name = e.OldValue.ToString();
                                 UserButton.UpdateNameManageList();
                             } else {
                                 throw new NotImplementedException();

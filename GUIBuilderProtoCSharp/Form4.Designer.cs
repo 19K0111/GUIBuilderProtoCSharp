@@ -459,6 +459,7 @@
             this.Controls.Add(this.menuStrip);
             this.Name = "Form4";
             this.Text = "無題 - コードエディタ";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form4_FormClosing);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
