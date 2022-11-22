@@ -17,12 +17,29 @@ namespace GUIBuilderProtoCSharp {
             InitializeAsync();
         }
 
-        public async void InitializeAsync() {
+        public async Task InitializeAsync() {
             await webView21.EnsureCoreWebView2Async(null);
             // ../bin/debug/内の指定したフォルダに仮想ドメインを割り当てる
             webView21.CoreWebView2.SetVirtualHostNameToFolderMapping(hostName, "block-editor", Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
             webView21.CoreWebView2.Navigate($"https://{hostName}/index.html");
             webView21.CoreWebView2.WebMessageReceived += webView21_WebMessageReceived;
+            await Task.Delay(500);
+            await LoadBlockCode();
+        }
+
+        public async Task LoadBlockCode() {
+            string code = "";
+            string fileName = Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode;
+            using (StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + fileName)) {
+                code = sr.ReadToEnd();
+                code = code.Replace("\n", "");
+                code = code.Replace("\"", "\\\"");
+                code = code.Replace("\'", "\\\'");
+            }
+            await Task.Delay(500);
+            //await webView21.ExecuteScriptAsync($"setTimeout(console.log, 2000, \"Loaded...\");document.getElementById(\"fileName\").innerHTML = \"{fileName}\";document.querySelector(\".text-code\").innerHTML = \"{code}\";");
+            //await webView21.ExecuteScriptAsync($"setTimeout(window_load, 5000, \"{Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode}\", \"{code})\")");
+            await webView21.ExecuteScriptAsync($"window_load(\"{Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode}\", \'{code}\')");
         }
 
         private void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {

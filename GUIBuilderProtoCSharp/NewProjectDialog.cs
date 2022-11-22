@@ -38,14 +38,16 @@ namespace GUIBuilderProtoCSharp {
             Form1.workingDirectory = textBox2.Text + "\\" + textBox1.Text;
             Directory.CreateDirectory(Form1.workingDirectory);
             Directory.CreateDirectory($"{Form1.workingDirectory}\\Resources");
-            StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + textBox1.Text + ProjectJson.Extension);
+            StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + textBox1.Text + GUIBuilderExtensions.Project);
             Form1.pj = new ProjectJson("Form");
             sw.Write(JsonSerializer.Serialize(Form1.pj, ProjectJson.options));
             // sw.Write("{\"designer\": [\"Form.dsn\"],\"src\": [\"Form.blk\"]}\r\n");
             sw.Close();
-            sw = new StreamWriter(Form1.workingDirectory + "\\" + Form1.pj.Name[0] + DesignJson.Extension);
+            sw = new StreamWriter(Form1.workingDirectory + "\\" + Form1.pj.Name[0] + GUIBuilderExtensions.Design);
             DesignJson dj = new DesignJson(Form1.pj);
             sw.Write(JsonSerializer.Serialize(dj, ProjectJson.options));
+            sw.Close();
+            sw = new StreamWriter(Form1.workingDirectory + "\\" + Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode);
             sw.Close();
             Close();
             textBox1.Text = "";

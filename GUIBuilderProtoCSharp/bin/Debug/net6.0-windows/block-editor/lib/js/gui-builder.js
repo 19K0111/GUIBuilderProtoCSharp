@@ -39,3 +39,11 @@ async function save() {
     $("#fileName").text(handle.name);
 }
 
+async function window_load(fileName, code) {
+    console.log("Loading...");
+    document.querySelector(".text-code").innerHTML = code;
+    $("#fileName").text(fileName);
+    SORAMAME_BLOCK.setSerializeBlock();
+    console.log("Loaded.");
+}
+

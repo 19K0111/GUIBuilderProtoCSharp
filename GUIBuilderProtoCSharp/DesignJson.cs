@@ -9,11 +9,6 @@ using System.Text.Unicode;
 namespace GUIBuilderProtoCSharp {
     // JSON形式にシリアライズ　https://takap-tech.com/entry/2020/08/21/001300
     internal class DesignJson {
-        public static string Extension {
-            get {
-                return ".dsn";
-            }
-        }
         [JsonConstructor]
         public DesignJson() {
         }

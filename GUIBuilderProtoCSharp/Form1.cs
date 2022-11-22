@@ -236,7 +236,6 @@ namespace GUIBuilderProtoCSharp {
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
                 Form1.workingDirectory = Path.GetDirectoryName(openFileDialog1.FileName);
-                Form1.f1.Init();
                 StreamReader sr = new StreamReader(openFileDialog1.FileName);
                 string jsonString = sr.ReadToEnd();
                 pj = System.Text.Json.JsonSerializer.Deserialize<ProjectJson>(jsonString, ProjectJson.options);
@@ -245,9 +244,11 @@ namespace GUIBuilderProtoCSharp {
                 pj.Name[0] = pj.Code[0].Split('.')[0];
                 System.Diagnostics.Debug.WriteLine(pj);
                 sr.Close();
+                Form1.f1.Init();
 
                 // デザインファイル読み込み
                 LoadDesign();
+                f5.LoadBlockCode();
             }
         }
 
@@ -298,7 +299,7 @@ namespace GUIBuilderProtoCSharp {
                 //};
                 //dj.Controls.Add(cj);
             }
-            StreamWriter sw = new StreamWriter(workingDirectory + "\\" + pj.Name[0] + DesignJson.Extension);
+            StreamWriter sw = new StreamWriter(workingDirectory + "\\" + pj.Name[0] + GUIBuilderExtensions.Design);
             // sw.Write(System.Text.Json.JsonSerializer.Serialize(dj, ProjectJson.options));
             sw.Write(System.Text.Json.JsonSerializer.Serialize(f3, f3.GetType(), ProjectJson.options)); // FormクラスをSystem.Text.Jsonでシリアライズ
             //sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(f3,Newtonsoft.Json.Formatting.Indented, ProjectJson.newton_options)); // FormクラスをNewtonsoft.Jsonでシリアライズ

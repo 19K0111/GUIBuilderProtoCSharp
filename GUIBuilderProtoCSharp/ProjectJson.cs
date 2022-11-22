@@ -7,6 +7,24 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 namespace GUIBuilderProtoCSharp {
+    public static class GUIBuilderExtensions {
+        public static string Project {
+            get {
+                return ".proj";
+            }
+        }
+        public static string Design {
+            get {
+                return ".dsn";
+            }
+        }
+        public static string BlockCode {
+            get {
+                return ".blk";
+            }
+        }
+    }
+
     internal class ProjectJson {
         internal static JsonSerializerOptions options = new JsonSerializerOptions {
             // https://hirahira.blog/json-serialization/
@@ -22,7 +40,7 @@ namespace GUIBuilderProtoCSharp {
             PropertyNameCaseInsensitive = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
             AllowTrailingCommas = true,
-            Converters = {new CursorJsonConverter(), new PointJsonConverter(), new IconJsonConverter(), new BindingContextJsonConverter(), new FontJsonConverter(), 
+            Converters = {new CursorJsonConverter(), new PointJsonConverter(), new IconJsonConverter(), new BindingContextJsonConverter(), new FontJsonConverter(),
                 new WindowTargetJsonConverter(), new ColorJsonConverter(), new ImageJsonConverter()},
         };
         internal static Newtonsoft.Json.JsonSerializerSettings newton_options = new Newtonsoft.Json.JsonSerializerSettings() {
@@ -31,11 +49,7 @@ namespace GUIBuilderProtoCSharp {
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, // ループ参照を無視する
             MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,  // 一覧にないプロパティ無視する
         };
-        public static string Extension {
-            get {
-                return ".proj";
-            }
-        }
+        
         [JsonConstructor]
         public ProjectJson() {
         }
