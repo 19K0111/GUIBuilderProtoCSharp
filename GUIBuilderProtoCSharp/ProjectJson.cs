@@ -23,6 +23,11 @@ namespace GUIBuilderProtoCSharp {
                 return ".blk";
             }
         }
+        public static string CSharpCode {
+            get {
+                return ".cs";
+            }
+        }
     }
 
     internal class ProjectJson {
@@ -58,6 +63,7 @@ namespace GUIBuilderProtoCSharp {
             Name = new string[args.Length];
             Designer = new string[args.Length];
             Code = new string[args.Length];
+            UseBlockCode = true;
             for (int i = 0; i < args.Length; i++) {
                 Name[i] = "Form";
                 Designer[i] = Name[i] + ".dsn";
@@ -77,6 +83,11 @@ namespace GUIBuilderProtoCSharp {
         [JsonPropertyName("src")]
         public string[] Code {
             get; set;
+        }
+
+        [JsonPropertyName("block-code")]
+        public bool UseBlockCode {
+            get;set;
         }
     }
 }

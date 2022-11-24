@@ -34,12 +34,12 @@ namespace GUIBuilderProtoCSharp {
         }
 
         private void button2_Click(object sender, EventArgs e) {
-            Form1.f1.Init();
             Form1.workingDirectory = textBox2.Text + "\\" + textBox1.Text;
             Directory.CreateDirectory(Form1.workingDirectory);
             Directory.CreateDirectory($"{Form1.workingDirectory}\\Resources");
             StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + textBox1.Text + GUIBuilderExtensions.Project);
             Form1.pj = new ProjectJson("Form");
+            Form1.f1.Init();
             sw.Write(JsonSerializer.Serialize(Form1.pj, ProjectJson.options));
             // sw.Write("{\"designer\": [\"Form.dsn\"],\"src\": [\"Form.blk\"]}\r\n");
             sw.Close();

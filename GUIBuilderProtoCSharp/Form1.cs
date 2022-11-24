@@ -91,7 +91,9 @@ namespace GUIBuilderProtoCSharp {
             f2.Controls.Clear();
             f3.Controls.Clear();
 
-            f5.Show();
+            if (pj.UseBlockCode) {
+                f5.Show();
+            }
             f2.MdiParent = this;
             f2.Show();
             f2.Location = new Point(10, 10);
@@ -249,7 +251,11 @@ namespace GUIBuilderProtoCSharp {
 
                 // デザインファイル読み込み
                 LoadDesign();
-                f5.LoadBlockCode();
+                if (pj.UseBlockCode) {
+                    f5.LoadBlockCode();
+                } else {
+                    f4.Open($"{workingDirectory}\\{pj.Name[0]}{GUIBuilderExtensions.CSharpCode}");
+                }
             }
         }
 

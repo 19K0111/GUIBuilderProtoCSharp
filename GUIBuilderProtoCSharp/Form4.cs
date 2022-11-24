@@ -115,18 +115,22 @@ namespace GUIBuilderProtoCSharp {
                 }
             }
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
-                using (StreamReader sr = new StreamReader(openFileDialog1.FileName, Encoding.UTF8)) {
+                Open(openFileDialog1.FileName);
+            }
+        }
+
+        public void Open(string fn) {
+                using (StreamReader sr = new StreamReader(fn, Encoding.UTF8)) {
                     fileDetail = sr.ReadToEnd();
                     richTextBox1.Text = fileDetail;
                 }
-                fileName = openFileDialog1.FileName;
-                saveFileDialog1.FileName = openFileDialog1.FileName;
-                Text = openFileDialog1.FileName + " - " + Form1.CODE_EDITOR;
+                fileName = fn;
+                saveFileDialog1.FileName = fn;
+                Text = fn + " - " + Form1.CODE_EDITOR;
                 richTextBox1.ClearUndo();
                 undoToolStripMenuItem.Enabled = false;
                 redoToolStripMenuItem.Enabled = false;
-                //richTextBox1.LoadFile(openFileDialog1.FileName, RichTextBoxStreamType.PlainText); // UTF-8以外のエンコーディングだと文字化けするので使わない
-            }
+                //richTextBox1.LoadFile(fn, RichTextBoxStreamType.PlainText); // UTF-8以外のエンコーディングだと文字化けするので使わない        
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -223,6 +227,16 @@ namespace GUIBuilderProtoCSharp {
                     編集を有効化EToolStripMenuItem.Checked = !編集を有効化EToolStripMenuItem.Checked;
                     richTextBox1.Enabled = 編集を有効化EToolStripMenuItem.Checked;
                     編集を有効化EToolStripMenuItem.Enabled = false;
+                    Form1.pj.UseBlockCode = false;
+                    string[] split = Form1.workingDirectory.Split("\\");
+                    using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + split[split.Length - 1] + GUIBuilderExtensions.Project)) {
+                        sw.Write(System.Text.Json.JsonSerializer.Serialize(Form1.pj, ProjectJson.options));
+                    }
+                    fileName = Form1.workingDirectory + "\\" + Form1.pj.Name[0] + GUIBuilderExtensions.CSharpCode;
+                    using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
+                        sw.Write(richTextBox1.Text);
+                        Text = fileName + " - " + Form1.CODE_EDITOR;
+                    }
                     break;
                 case DialogResult.Cancel:
                     return;
@@ -232,8 +246,8 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public void Init() {
-            編集を有効化EToolStripMenuItem.Enabled = true;
-            編集を有効化EToolStripMenuItem.Checked = false;
+            編集を有効化EToolStripMenuItem.Checked = !Form1.pj.UseBlockCode;
+            編集を有効化EToolStripMenuItem.Enabled = Form1.pj.UseBlockCode;
         }
 
     }
