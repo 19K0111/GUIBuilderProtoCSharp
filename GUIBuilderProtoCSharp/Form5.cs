@@ -44,16 +44,23 @@ namespace GUIBuilderProtoCSharp {
 
         private void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {
             Form1.f4.richTextBox1.Enabled = false;
+            Form1.f4.編集を有効化EToolStripMenuItem.Checked = false;
             Form1.f4.richTextBox1.Text = e.TryGetWebMessageAsString();
             Form1.f4.richTextBox1_TextChanged(sender, null);
         }
 
         private void Form5_FormClosing(object sender, FormClosingEventArgs e) {
-            switch (MessageBox.Show("保存していない変更は失われますが、よろしいですか？", Form1.BLOCK_EDITOR, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)) {
-                case DialogResult.Yes:
-                    break;
-                case DialogResult.No:
-                    e.Cancel = true;
+            switch (e.CloseReason) {
+                case CloseReason.UserClosing:
+                    switch (MessageBox.Show("保存していない変更は失われますが、よろしいですか？", Form1.BLOCK_EDITOR, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)) {
+                        case DialogResult.Yes:
+                            break;
+                        case DialogResult.No:
+                            e.Cancel = true;
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 default:
                     break;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace Interpreter {
     public enum Mnemonic {
@@ -265,6 +267,7 @@ namespace Interpreter {
                     }
                     if (ch == '"') {
                         // 文字列の処理
+                        this.Sb += '"';
                         char nch = '_';
                         while (nch != '"') {
                             nch = this.Reader.NextChar();
@@ -275,6 +278,7 @@ namespace Interpreter {
                             }
                             this.Sb += nch;
                         }
+                        this.Sb += '"';
                         token = TC.STR;
                         break;
                     }
@@ -1023,12 +1027,16 @@ namespace Interpreter {
                     return entry;
                 }
             }
-            Control control = GUIBuilderProtoCSharp.Form1.f3.Controls.Find(ident.Split(".")[0], true)[0];
-            if (control != null && ident != scope) {
-                Name entry = new Name(control.Name, Type.VAR, 0, 0, scope);
-                return entry;
+            try {
+                Control control = GUIBuilderProtoCSharp.Form1.f3.Controls.Find(ident.Split(".")[0], true)[0];
+                if (control != null && ident != scope) {
+                    Name entry = new Name(control.Name, Type.VAR, 0, 0, scope);
+                    return entry;
+                }
+                return null;
+            } catch (IndexOutOfRangeException) { // Text = "hoge"のようにフォームに対してのプロパティが来るとエラー
+                return new Name("", Type.VAR, 0, 0, scope);
             }
-            return null;
         }
         public void AddFunc(string ident, int codeAddress) {
             // global scope;
@@ -1194,24 +1202,41 @@ namespace Interpreter {
         }
 
         public static void Do(string name) {
-            EventList? el = null;
+            // 自作の処理系で実行する方法(関数定義ができない)
+            //EventList? el = null;
+            //foreach (var item in Lang.eventList) {
+            //    if (item.Name == name) {
+            //        el = item;
+            //        CurrentTokenIndex = el.TokenStart;
+            //        break;
+            //    }
+            //}
+            //if (el == null) {
+            //    return;
+            //}
+            //foreach (var item in el.Statements) {
+            //    if (Lang.s.Tokens[CurrentTokenIndex] == TC.IDENT && Lang.s.Tokens[CurrentTokenIndex + 1] == TC.ASSIGN) {
+            //        SetProperty(Lang.s.Leximes[CurrentTokenIndex].Split(".")[0], Lang.s.Leximes[CurrentTokenIndex].Split(".")[1]);
+            //    }
+
+            //    Console.WriteLine(item);
+            //}
+
+            // CSharpScriptingライブラリを使う方法
             foreach (var item in Lang.eventList) {
                 if (item.Name == name) {
-                    el = item;
-                    CurrentTokenIndex = el.TokenStart;
+                    try {
+                        string code = item.OriginalCode;
+                        foreach (Control control in GUIBuilderProtoCSharp.Form1.f3.Controls) {
+                            System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{control.Name}[.]");
+                            code = code.Replace(match.Value, $"Controls.Find(\"{match.Value.Replace(".", "")}\", true)[0].");
+                        }
+                        CSharpScript.RunAsync(code, globals: GUIBuilderProtoCSharp.Form1.f3);
+                    } catch (CompilationErrorException) { }
                     break;
                 }
             }
-            if (el == null) {
-                return;
-            }
-            foreach (var item in el.Statements) {
-                if (Lang.s.Tokens[CurrentTokenIndex] == TC.IDENT && Lang.s.Tokens[CurrentTokenIndex + 1] == TC.ASSIGN) {
-                    SetProperty(Lang.s.Leximes[CurrentTokenIndex].Split(".")[0], Lang.s.Leximes[CurrentTokenIndex].Split(".")[1]);
-                }
-
-                Console.WriteLine(item);
-            }
+            // TODO: 関数定義と呼び出しをできるようにする
         }
         public static void SetProperty(string controlName, string propName) {
             Control control = GUIBuilderProtoCSharp.Form1.f3.Controls.Find(controlName, true)[0];
@@ -1231,7 +1256,7 @@ namespace Interpreter {
                         CurrentTokenIndex++;
                         continue;
                     } else if (Lang.s.Tokens[CurrentTokenIndex] == TC.STR) {
-                        assignText += Lang.s.Leximes[CurrentTokenIndex];
+                        assignText += Lang.s.Leximes[CurrentTokenIndex].Substring(1, Lang.s.Leximes[CurrentTokenIndex].Length - 2); // ""を取り除く
                         CurrentTokenIndex++;
                     } else {
                         CurrentTokenIndex++;

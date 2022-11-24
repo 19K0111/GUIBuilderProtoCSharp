@@ -212,5 +212,29 @@ namespace GUIBuilderProtoCSharp {
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
         }
+
+        private void 編集を有効化EToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (編集を有効化EToolStripMenuItem.Checked) {
+                return;
+            }
+            switch (MessageBox.Show($"{Form1.CODE_EDITOR}での編集を有効化すると{Form1.BLOCK_EDITOR}で編集できなくなりますが、よろしいですか？", $"{Form1.CODE_EDITOR}", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation)) {
+                case DialogResult.OK:
+                    Form1.f5.Hide();
+                    編集を有効化EToolStripMenuItem.Checked = !編集を有効化EToolStripMenuItem.Checked;
+                    richTextBox1.Enabled = 編集を有効化EToolStripMenuItem.Checked;
+                    編集を有効化EToolStripMenuItem.Enabled = false;
+                    break;
+                case DialogResult.Cancel:
+                    return;
+                default:
+                    break;
+            }
+        }
+
+        public void Init() {
+            編集を有効化EToolStripMenuItem.Enabled = true;
+            編集を有効化EToolStripMenuItem.Checked = false;
+        }
+
     }
 }

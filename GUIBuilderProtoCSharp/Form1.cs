@@ -97,6 +97,7 @@ namespace GUIBuilderProtoCSharp {
             f2.Location = new Point(10, 10);
             f3.Show();
             f3.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y);
+            f4.Init();
             f4.Show();
             f4.Location = new Point(this.Size.Width + this.Location.X, this.Location.Y + f3.Size.Height);
             treeView1.Enabled = true;
