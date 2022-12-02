@@ -42,6 +42,12 @@ namespace GUIBuilderProtoCSharp {
             await webView21.ExecuteScriptAsync($"window_load(\"{Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode}\", \'{code}\')");
         }
 
+        public async Task LoadBlockCode(string code) {
+            await Task.Delay(500);
+            await webView21.ExecuteScriptAsync($"window_load(\"{Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode}\", \'{code}\')");
+
+        }
+
         private void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {
             Form1.f4.richTextBox1.Enabled = false;
             Form1.f4.編集を有効化EToolStripMenuItem.Checked = false;

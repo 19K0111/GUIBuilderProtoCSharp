@@ -817,6 +817,26 @@ namespace GUIBuilderProtoCSharp {
                             return;
                         }
                     }
+                    // Nameを変更した際にテキストエディタの識別子も変更する
+                    if (pj.UseBlockCode) {
+                        string code = "";
+                        string fileName = Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode;
+                        using (StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + fileName)) {
+                            code = sr.ReadToEnd();
+                        }
+                        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{e.OldValue.ToString()}[<]");
+                        code = code.Replace(match.Value, $"{((Control)((PropertyGrid)s).SelectedObject).Name}<");
+                        using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + fileName)) {
+                            sw.Write(code);
+                        }
+                        code = code.Replace("\n", "");
+                        code = code.Replace("\"", "\\\"");
+                        code = code.Replace("\'", "\\\'");
+                        f5.LoadBlockCode(code);
+                    } else {
+                        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(f4.richTextBox1.Text, @$"{e.OldValue.ToString()}[.]");
+                        f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{((Control)((PropertyGrid)s).SelectedObject).Name}.");
+                    }
                 } else
                     previewControl = f3.Controls.Find(selecting.Name, true)[0];
                 Type? returnType = property?.PropertyType;
