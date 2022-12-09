@@ -40,6 +40,7 @@
             this.Name = "Form2";
             this.Text = "Form - デザイン";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
+            this.ResizeEnd += new System.EventHandler(this.Form2_ResizeEnd);
             this.LocationChanged += new System.EventHandler(this.Form2_LocationChanged);
             this.Click += new System.EventHandler(this.Form2_Click);
             this.Resize += new System.EventHandler(this.Form2_Resize);

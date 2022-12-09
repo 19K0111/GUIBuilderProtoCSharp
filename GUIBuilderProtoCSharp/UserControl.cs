@@ -20,6 +20,8 @@ namespace GUIBuilderProtoCSharp {
         private static Point originLocation;
         private static string flag = "Default";
 
+        public static readonly string[] NOT_CHANGED_PROPERTY = { "Enabled", "Visible" };
+
         internal static List<object> userControls = new();
         internal static List<object> UserControls {
             get {
@@ -37,8 +39,13 @@ namespace GUIBuilderProtoCSharp {
             selecting = null;
             UserButton.Init();
         }
-        public static Control FindPreview(Control design) {
+        public static Control? FindPreview(Control? design) {
+            if(design == null) { return null; }
             return Form1.f3.Controls.Find(design.Name, true)[0];
+        }
+        public static Control? FindDesign(Control preview) {
+            if(preview == null) { return null; }
+            return Form1.f2.Controls.Find(preview.Name, true)[0];
         }
 
         public static void Sync(Modify m, List<object> operations) {
@@ -46,7 +53,9 @@ namespace GUIBuilderProtoCSharp {
             try {
                 previewControl = Form1.f3.Controls.Find(((Control)m.TargetControl).Name, true)[0]; // Formの数を複数扱う場合は、変える必要がある
             } catch (IndexOutOfRangeException) {
-            } catch (NullReferenceException) { }
+            } catch (NullReferenceException) {
+                previewControl = m.TargetPreviewForm;
+            }
             foreach (var item in operations) {
                 switch (item) {
                     case Point p:
@@ -95,6 +104,13 @@ namespace GUIBuilderProtoCSharp {
         }
         public static Type GetSelectedControlType() {
             return selecting.GetType();
+        }
+
+        public static Control GetSelectedControlPreview() {
+            return Form1.f3.Controls.Find(selecting.Name, true)[0];
+        }
+        public static Type GetSelectedControlPreviewType() {
+            return GetSelectedControlPreview().GetType();
         }
 
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
@@ -280,7 +296,7 @@ namespace GUIBuilderProtoCSharp {
                     List<object> after = new List<object> { ((Control)sender).Location, ((Control)sender).Size };
                     Form1.undo.Push(new Modify(Modify.OperationCode.Modify, ((Control)sender), ((Control)sender).FindForm(), before, after, propertyInfo));
                     Form1.redo.Clear();
-                    Form1.f1.SetPropView((Control)sender);
+                    Form1.f1.SetPropView(FindDesign((Control)sender));
                 }
             }
             Modify.Check(Form1.undo, Form1.redo);
@@ -376,7 +392,7 @@ namespace GUIBuilderProtoCSharp {
 
         internal static void UserControl_Enter(object sender, EventArgs e) {
             selecting = (Control)sender;
-            Form1.f1.SetPropView((Control)sender);
+            Form1.f1.SetPropView(FindPreview((Control)sender));
         }
 
         internal static void UserControl_Leave(object sender, EventArgs e) {
@@ -482,7 +498,8 @@ namespace GUIBuilderProtoCSharp {
         private void UserButton_Click(object? sender, EventArgs e) {
             Console.WriteLine("Clicked: " + this.Name);
             try {
-                Interpreter.EventList.Do(this.Name + ".Click");
+                // Interpreter.EventList.Do(this.Name + ".Click"); // Button1.Clickを検索して呼び出す方法
+                Interpreter.EventList.Do(this.Name + "_Click"); // Button1_Clickを検索して呼び出す方法　関数呼び出しに対応できる方法
             } catch (Exception ex) {
                 (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
             }

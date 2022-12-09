@@ -70,9 +70,10 @@ namespace GUIBuilderProtoCSharp {
             Delete = 2,
         }
         public Modify(/*string type,*/ OperationCode operation, object control, Form parentForm, List<object> before, List<object> after, System.Reflection.PropertyInfo? propertyInfo = null) {
+            // GUI部品のプロパティ変更に使用されるコンストラクタ
             ClassName = control.GetType().Name;
             Operation = operation;
-            TargetControl = control;
+            TargetControl = UserControl.FindDesign((Control)control);
             PreviewControl = UserControl.FindPreview((Control)control);
             TargetForm = parentForm;
             Before = before;
@@ -81,6 +82,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public Modify(/*string type,*/ OperationCode operation, Form parentForm, Form previewForm, List<object> before, List<object> after, System.Reflection.PropertyInfo? propertyInfo = null) {
+            // Formのプロパティ変更に使用されるコンストラクタ
             ClassName = parentForm.GetType().Name;
             Operation = operation;
             // TargetControl = control;
@@ -183,10 +185,18 @@ namespace GUIBuilderProtoCSharp {
             foreach (object item in op) {
                 switch (item) {
                     case Point p:
-                        ((Control)m.TargetControl).Location = p;
+                        try {
+                            ((Control)m.TargetControl).Location = p;
+                        } catch (NullReferenceException) {
+                            m.TargetForm.Location = p;
+                        }
                         break;
                     case Size s:
-                        ((Control)m.TargetControl).Size = s;
+                        try {
+                            ((Control)m.TargetControl).Size = s;
+                        } catch (NullReferenceException) {
+                            m.TargetForm.Size = s;
+                        }
                         break;
                     default:
                         if (m.TargetControl == null) {
@@ -197,7 +207,14 @@ namespace GUIBuilderProtoCSharp {
                                 Form1.f2.Text += " - デザイン";
                             }
                         } else {
-                            Form1.f1.SetValueFromListBox((Control)m.TargetControl, m.PropertyInfo, item);
+                            bool both = true;
+                            if (Array.IndexOf(UserControl.NOT_CHANGED_PROPERTY, m.PropertyInfo?.Name) > -1) {
+                                both = false;
+                            }
+                            if (m.PropertyInfo?.Name == "Name") {
+                                Form1.f1.Rename(((Control)m.TargetControl).Name, item.ToString());
+                            }
+                            Form1.f1.SetValueFromListBox((Control)m.TargetControl, m.PropertyInfo, item, both);
                         }
                         break;
                 }

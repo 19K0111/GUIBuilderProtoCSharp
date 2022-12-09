@@ -117,6 +117,8 @@ namespace GUIBuilderProtoCSharp {
             tb.Multiline = true;
             consoleForm.Controls.Add(tb);
 
+            propertyGrid1.SelectedObject = null;
+
             undo.Clear();
             redo.Clear();
             Modify.Check(undo, redo);
@@ -224,12 +226,20 @@ namespace GUIBuilderProtoCSharp {
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
             Modify.Undo(undo, redo);
-            propertyGrid1.SelectedObject = UserControl.GetSelectedControl();
+            try {
+                propertyGrid1.SelectedObject = UserControl.GetSelectedControlPreview();
+            } catch (NullReferenceException) {
+                propertyGrid1.SelectedObject = f3;
+            }
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e) {
             Modify.Redo(redo, undo);
-            propertyGrid1.SelectedObject = UserControl.GetSelectedControl();
+            try {
+                propertyGrid1.SelectedObject = UserControl.GetSelectedControlPreview();
+            } catch (NullReferenceException) {
+                propertyGrid1.SelectedObject = f3;
+            }
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -320,6 +330,8 @@ namespace GUIBuilderProtoCSharp {
                 default:
                     return;
             }
+            // reload時にNameを変更した識別子も戻したい
+
             Form1.f1.Init();
             LoadDesign();
         }
@@ -495,7 +507,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         public void SetPropView(Control control) {
-            propertyGrid1.SelectedObject = control;
+            propertyGrid1.SelectedObject = UserControl.FindPreview(control);
             if (false) {
                 listView1.Clear();
 
@@ -769,9 +781,10 @@ namespace GUIBuilderProtoCSharp {
             SetValueFromListBox(UserControl.GetSelectedControl(), listView1.SelectedItems[0].Text, numericUpDown1.Value.ToString());
         }
 
-        public void SetValueFromListBox(Control? control, System.Reflection.PropertyInfo? propName, object? value) {
+        public void SetValueFromListBox(Control? control, System.Reflection.PropertyInfo? propName, object? value, bool both = true) {
             propName?.SetValue(UserControl.FindPreview(control), value);
-            propName?.SetValue(control, value);
+            if (both)
+                propName?.SetValue(UserControl.FindDesign(control), value);
         }
         public void SetValueFromListBox(Control? control, string? propName, object? value) {
             System.Reflection.PropertyInfo property = UserControl.GetSelectedControlType().GetProperty(propName);
@@ -782,25 +795,52 @@ namespace GUIBuilderProtoCSharp {
             SetValueFromListBox(control, property, Convert.ChangeType(value, property.PropertyType));
         }
 
+        public void Rename(string oldName, string newName) {
+            // Nameを変更した際にテキストエディタの識別子も変更する
+            if (pj.UseBlockCode) {
+                string code = "";
+                string fileName = Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode;
+                using (StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + fileName)) {
+                    code = sr.ReadToEnd();
+                }
+                System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{oldName}[<]");
+                code = code.Replace(match.Value, $"{newName}<");
+                using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + fileName)) {
+                    sw.Write(code);
+                }
+                code = code.Replace("\n", "");
+                code = code.Replace("\"", "\\\"");
+                code = code.Replace("\'", "\\\'");
+                f5.LoadBlockCode(code);
+            } else {
+                System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(f4.richTextBox1.Text, @$"{oldName}[.]");
+                f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{newName}.");
+            }
+
+        }
+
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
             List<object> before = new List<object>() { e.OldValue };
             List<object> after = new List<object>() { e.ChangedItem.Value };
             System.Reflection.PropertyInfo? property = propertyGrid1.SelectedObject.GetType().GetProperty(e.ChangedItem.Label);
             if (propertyGrid1.SelectedObject.GetType().BaseType == typeof(UserForm)) {
+                // Formのプロパティを変更する場合
                 f2.GetType().GetProperty(property.Name).SetValue(f2, f3.GetType().GetProperty(property.Name).GetValue(f3));
                 undo.Push(new Modify(Modify.OperationCode.Modify, (Form)propertyGrid1.SelectedObject, f2, before, after, property));
                 if (property?.Name == "Text") {
                     f2.Text += " - デザイン";
                 }
             } else {
-                Control selecting = UserControl.GetSelectedControl();
+                // GUI部品のプロパティを変更する場合
+                // Control selecting = UserControl.GetSelectedControl();
                 Control? previewControl = null;
+                bool both = true;
                 if (property?.Name == "Name") {
-                    previewControl = f3.Controls.Find(e.OldValue.ToString(), true)[0];
+                    previewControl = f3.Controls.Find(e.ChangedItem.Value.ToString(), true)[0]; // f3.Controls.Find(e.OldValue.ToString(), true)[0];
                     int cnt = 0;
-                    for (int i = 0; i < f2.Controls.Count; i++) {
+                    for (int i = 0; i < f3.Controls.Count; i++) {
                         // デザイン側のFormでName被りが無いか検証
-                        if (f2.Controls[i].Name.GetHashCode() == e.ChangedItem.Value.GetHashCode()) {
+                        if (f3.Controls[i].Name.GetHashCode() == e.ChangedItem.Value.GetHashCode()) {
                             cnt++;
                         }
                         if (cnt > 1) {
@@ -816,32 +856,22 @@ namespace GUIBuilderProtoCSharp {
                             ((PropertyGrid)s).SelectedObject = ((PropertyGrid)s).SelectedObject;
                             return;
                         }
+                        //SetValueFromListBox(previewControl, property, e.ChangedItem.Value, both);
                     }
-                    // Nameを変更した際にテキストエディタの識別子も変更する
-                    if (pj.UseBlockCode) {
-                        string code = "";
-                        string fileName = Form1.pj.Name[0] + GUIBuilderExtensions.BlockCode;
-                        using (StreamReader sr = new StreamReader(Form1.workingDirectory + "\\" + fileName)) {
-                            code = sr.ReadToEnd();
-                        }
-                        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{e.OldValue.ToString()}[<]");
-                        code = code.Replace(match.Value, $"{((Control)((PropertyGrid)s).SelectedObject).Name}<");
-                        using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + fileName)) {
-                            sw.Write(code);
-                        }
-                        code = code.Replace("\n", "");
-                        code = code.Replace("\"", "\\\"");
-                        code = code.Replace("\'", "\\\'");
-                        f5.LoadBlockCode(code);
-                    } else {
-                        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(f4.richTextBox1.Text, @$"{e.OldValue.ToString()}[.]");
-                        f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{((Control)((PropertyGrid)s).SelectedObject).Name}.");
-                    }
-                } else
-                    previewControl = f3.Controls.Find(selecting.Name, true)[0];
+                    property?.SetValue(f2.Controls.Find(e.OldValue.ToString(), true)[0], e.ChangedItem.Value);
+                    Rename(e.OldValue.ToString(), ((Control)((PropertyGrid)s).SelectedObject).Name);
+                } else if (Array.IndexOf(UserControl.NOT_CHANGED_PROPERTY, property?.Name) != -1 /* property?.Name == "Enabled" || property?.Name == "Visible" */) {
+                    // デザイン側と同期しないプロパティ
+                    // これらのプロパティはデザイン側も変更すると部品を選択できない不都合がおこる
+                    previewControl = UserControl.GetSelectedControlPreview();
+                    both = false;
+                } else {
+                    // previewControl = f3.Controls.Find(selecting.Name, true)[0];
+                    previewControl = UserControl.GetSelectedControlPreview();
+                }
                 Type? returnType = property?.PropertyType;
-                SetValueFromListBox(previewControl, property, e.ChangedItem.Value);
-                undo.Push(new Modify(Modify.OperationCode.Modify, propertyGrid1.SelectedObject, selecting.FindForm(), before, after, property));
+                SetValueFromListBox(previewControl, property, e.ChangedItem.Value, both);
+                undo.Push(new Modify(Modify.OperationCode.Modify, propertyGrid1.SelectedObject, previewControl.FindForm(), before, after, property));
             }
             redo.Clear();
             Modify.Check(undo, redo);

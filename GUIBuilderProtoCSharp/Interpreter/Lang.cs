@@ -76,6 +76,8 @@ namespace Interpreter {
         EVENT = 29,
         OTHERS = 26,
 
+        ACCESS = 64,
+
         AND = 253,
         OR = 254,
         XOR = 255,
@@ -117,8 +119,8 @@ namespace Interpreter {
         }
         public void SetupKeyword() {
             this.KeyTable = new Dictionary<string, TC>();
-            string[] keys = { "int", "putint", "if", "else", "do", "while", "return", "fun", "event", "true", "false" };
-            TC[] tclasses = { TC.INT, TC.PUTINT, TC.IF, TC.ELSE, TC.DO, TC.WHILE, TC.RETURN, TC.FUN, TC.EVENT, TC.BOOL, TC.BOOL };
+            string[] keys = { "int", "putint", "if", "else", "do", "while", "return", "fun", "event", "true", "false", "public", "protected", "internal", "private" };
+            TC[] tclasses = { TC.INT, TC.PUTINT, TC.IF, TC.ELSE, TC.DO, TC.WHILE, TC.RETURN, TC.FUN, TC.EVENT, TC.BOOL, TC.BOOL, TC.ACCESS, TC.ACCESS, TC.ACCESS, TC.ACCESS };
             for (int i = 0; i < keys.Length; i++) {
                 this.KeyTable.Add(keys[i], tclasses[i]);
             }
@@ -405,15 +407,43 @@ namespace Interpreter {
             ProcList();
             // codeTable[callSite].Arg2 = table.Get("main", "main").Address;
         }
+        public static void S2() { // S -> DeclList StmList
+            table = new NameTable();
+            ProcList2();
+        }
         public static void ProcList() {
             ProcHead();
             Body();
             while (true) {
-                if (next != TC.FUN && next != TC.EVENT) {
+                if (next != TC.FUN && next != TC.EVENT && next != TC.ACCESS) {
                     break;
                 }
                 ProcHead();
                 Body();
+            }
+        }
+        public static void ProcList2() {
+            while (next != TC.EOF) {
+                switch (next) {
+                    case TC.EVENT:
+                        Check(TC.EVENT);
+                        Proceed(TC.IDENT);
+                        eventName = s.CurrentString();
+                        code = code.Replace(eventName, eventName.Replace(".", "_"));
+                        eventTable[eventName] = new List<string> {
+                            /* イベントが呼び出されたときに実行される文 */
+
+                        };
+                        eventList.Add(new EventList(eventName.Replace(".", "_"), code));
+                        break;
+                    default:
+                        ProceedOnly();
+                        break;
+                }
+            }
+            code = code.Replace("event ", "public void ");
+            foreach (var item in eventList) {
+                item.OriginalCode = code;
             }
         }
         public static void ProcHead() {
@@ -895,6 +925,7 @@ namespace Interpreter {
         }
         public static void Compile(string s) {
             Console.Clear();
+            code = s;
             statements = "";
             eventList.Clear();
             Tokenizer tokenizer = new Tokenizer(new CharReader(s));
@@ -917,7 +948,7 @@ namespace Interpreter {
             s = new TestTokenizer(tokens, leximes);
             next = s.NextToken();
             codeTable.Clear();
-            S();
+            S2();
             table.Print();
             ShowCode(codeTable, showLine);
         }
@@ -1174,7 +1205,7 @@ namespace Interpreter {
         public EventList() {
 
         }
-        public EventList(string name, string originalCode, int tokenStart, int tokenEnd) {
+        public EventList(string name, string originalCode, int tokenStart = -1, int tokenEnd = -1) {
             this.Name = name;
             this.OriginalCode = originalCode;
             this.TokenStart = tokenStart;
@@ -1223,20 +1254,49 @@ namespace Interpreter {
             //}
 
             // CSharpScriptingライブラリを使う方法
+            //foreach (var item in Lang.eventList) {
+            //    if (item.Name == name) {
+            //        try {
+            //            string code = item.OriginalCode;
+            //            foreach (Control control in GUIBuilderProtoCSharp.Form1.f3.Controls) {
+            //                System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{control.Name}[.]");
+            //                code = code.Replace(match.Value, $"Controls.Find(\"{match.Value.Replace(".", "")}\", true)[0].");
+            //            }
+            //            CSharpScript.RunAsync(code, globals: GUIBuilderProtoCSharp.Form1.f3);
+            //        } catch (CompilationErrorException) { }
+            //        break;
+            //    }
+            //}
+
+            // 関数定義と呼び出しをできるようにする
+            // アセンブリと名前空間のインポート
+            List<System.Reflection.Assembly> assemblies = new List<System.Reflection.Assembly>() {
+                System.Reflection.Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),
+                System.Reflection.Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),
+                System.Reflection.Assembly.GetAssembly(typeof(System.Dynamic.ExpandoObject)),
+                System.Reflection.Assembly.GetAssembly(typeof(System.Data.DataTable)),
+                System.Reflection.Assembly.Load("System.Windows.Forms"),
+            };
+            List<string> imports = new List<string>() {
+                "System","System.Dynamic", "System.Linq", "System.Text","System.IO", "System.Collections.Generic", "System.Data", "System.Windows.Forms", "System.Drawing"
+            };
+            string code = "";
             foreach (var item in Lang.eventList) {
                 if (item.Name == name) {
                     try {
-                        string code = item.OriginalCode;
                         foreach (Control control in GUIBuilderProtoCSharp.Form1.f3.Controls) {
-                            System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{control.Name}[.]");
-                            code = code.Replace(match.Value, $"Controls.Find(\"{match.Value.Replace(".", "")}\", true)[0].");
+                            System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(item.OriginalCode, @$"{control.Name}[.]");
+                            // item.OriginalCode = item.OriginalCode.Replace(match.Value, $"Controls.Find(\"{match.Value.Replace(".", "")}\", true)[0].");
+                            code += $"var {control.Name} = Controls.Find(\"{control.Name}\", true)[0];\n";
                         }
-                        CSharpScript.RunAsync(code, globals: GUIBuilderProtoCSharp.Form1.f3);
-                    } catch (CompilationErrorException) { }
+                        code += $"{item.OriginalCode}\n{name}();";
+                        Console.WriteLine($"[Script]--------------------\n{code}\n--------------------");
+                        CSharpScript.RunAsync($"{code}", globals: GUIBuilderProtoCSharp.Form1.f3, 
+                            options: ScriptOptions.Default.AddReferences(assemblies).AddImports(imports));
+                    } catch (CompilationErrorException ex) { Console.WriteLine(ex); }
                     break;
                 }
             }
-            // TODO: 関数定義と呼び出しをできるようにする
         }
         public static void SetProperty(string controlName, string propName) {
             Control control = GUIBuilderProtoCSharp.Form1.f3.Controls.Find(controlName, true)[0];
