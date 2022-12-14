@@ -804,7 +804,9 @@ namespace GUIBuilderProtoCSharp {
                     code = sr.ReadToEnd();
                 }
                 System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(code, @$"{oldName}[<]");
-                code = code.Replace(match.Value, $"{newName}<");
+                if (match.Length > 0) {
+                    code = code.Replace(match.Value, $"{newName}<");
+                }
                 using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + fileName)) {
                     sw.Write(code);
                 }
@@ -814,9 +816,10 @@ namespace GUIBuilderProtoCSharp {
                 f5.LoadBlockCode(code);
             } else {
                 System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(f4.richTextBox1.Text, @$"{oldName}[.]");
-                f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{newName}.");
+                if (match.Length > 0) {
+                    f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{newName}.");
+                }
             }
-
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
