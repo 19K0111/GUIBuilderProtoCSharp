@@ -103,6 +103,7 @@
             this.statusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.イベントマクロMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.プレビューウィンドウPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.常に最前面に表示FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -484,7 +485,8 @@
             // toolsMenu
             // 
             this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.イベントマクロMToolStripMenuItem});
             this.toolsMenu.Name = "toolsMenu";
             this.toolsMenu.Size = new System.Drawing.Size(60, 20);
             this.toolsMenu.Text = "ツール(&T)";
@@ -492,8 +494,17 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.optionsToolStripMenuItem.Text = "オプション(&O)";
+            // 
+            // イベントマクロMToolStripMenuItem
+            // 
+            this.イベントマクロMToolStripMenuItem.Enabled = false;
+            this.イベントマクロMToolStripMenuItem.Name = "イベントマクロMToolStripMenuItem";
+            this.イベントマクロMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.イベントマクロMToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.イベントマクロMToolStripMenuItem.Text = "イベントマクロ(&M)";
+            this.イベントマクロMToolStripMenuItem.Click += new System.EventHandler(this.イベントマクロMToolStripMenuItem_Click);
             // 
             // windowsMenu
             // 
@@ -1038,5 +1049,6 @@
         private ColorDialog colorDialog1;
         private Splitter splitter3;
         internal PropertyGrid propertyGrid1;
+        private ToolStripMenuItem イベントマクロMToolStripMenuItem;
     }
 }

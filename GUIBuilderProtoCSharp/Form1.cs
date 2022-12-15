@@ -258,6 +258,8 @@ namespace GUIBuilderProtoCSharp {
                 System.Diagnostics.Debug.WriteLine(pj);
                 sr.Close();
                 Form1.f1.Init();
+                saveToolStripButton.Enabled = true;
+                イベントマクロMToolStripMenuItem.Enabled = true;
 
                 // デザインファイル読み込み
                 LoadDesign();
@@ -878,6 +880,10 @@ namespace GUIBuilderProtoCSharp {
             }
             redo.Clear();
             Modify.Check(undo, redo);
+        }
+
+        private void イベントマクロMToolStripMenuItem_Click(object sender, EventArgs e) {
+            new Form6().Show();
         }
     }
 }
