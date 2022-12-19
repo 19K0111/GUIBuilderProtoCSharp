@@ -809,6 +809,10 @@ namespace GUIBuilderProtoCSharp {
                 if (match.Length > 0) {
                     code = code.Replace(match.Value, $"{newName}<");
                 }
+                match = System.Text.RegularExpressions.Regex.Match(code, @$"{oldName}[.]");
+                if (match.Length > 0) {
+                    code = code.Replace(match.Value, $"{newName}.");
+                }
                 using (StreamWriter sw = new StreamWriter(Form1.workingDirectory + "\\" + fileName)) {
                     sw.Write(code);
                 }
@@ -822,6 +826,21 @@ namespace GUIBuilderProtoCSharp {
                     f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{newName}.");
                 }
             }
+            try {
+                string macro;
+                using (StreamReader sr = new StreamReader($"{workingDirectory}\\event.macro")) {
+                    macro = sr.ReadToEnd();
+                }
+                System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(macro, @$"{oldName}[_]");
+                if (match.Length > 0) {
+                    macro = macro.Replace(match.Value, $"{newName}_");
+                    using (StreamWriter sw = new StreamWriter($"{workingDirectory}\\event.macro")) {
+                        sw.Write(macro);
+                    }
+                }
+            } catch (FileNotFoundException) {
+            }
+            saveToolStripMenuItem_Click(null, null);
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
@@ -883,7 +902,7 @@ namespace GUIBuilderProtoCSharp {
         }
 
         private void イベントマクロMToolStripMenuItem_Click(object sender, EventArgs e) {
-            new Form6().Show();
+            new Form6().ShowDialog();
         }
     }
 }
