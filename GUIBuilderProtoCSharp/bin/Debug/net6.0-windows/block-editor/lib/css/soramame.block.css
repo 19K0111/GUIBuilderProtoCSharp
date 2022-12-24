@@ -180,3 +180,9 @@ a.trash:hover {
 .code-body {
 	display: none;
 }
+
+.sidebar-nav{
+	overflow-y: auto;
+	bottom: 0;
+	top: 150px;
+}
