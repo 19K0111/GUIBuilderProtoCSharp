@@ -41,6 +41,7 @@ namespace GUIBuilderProtoCSharp {
         List<RichTextBox> UserRichTextBoxes = new List<RichTextBox>();
         List<TextBox> UserTextBoxes = new List<TextBox>();
 
+
         public static Form1 f1;
         public static Form2 f2 = new Form2();
         public static Form3 f3 = new Form3();
@@ -60,6 +61,7 @@ namespace GUIBuilderProtoCSharp {
 
         internal static Stack<Modify> redo = new Stack<Modify>(); // [Ctrl] + [Y]
         internal static Stack<Modify> undo = new Stack<Modify>(); // [Ctrl] + [Z]
+        internal List<string> macroExecute;
         TreeNode? selectedItem = null;
         ControlProperties controlProperties = new ControlProperties();
         public Form1() {

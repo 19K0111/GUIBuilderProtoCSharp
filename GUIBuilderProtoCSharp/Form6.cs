@@ -13,6 +13,8 @@ namespace GUIBuilderProtoCSharp {
         }
 
         Dictionary<string, List<string>> macro = new();
+        string lastDoneMacroName = "";
+        List<string> lastDoneMacro = new();
         readonly string FILE_NAME = $"{Form1.workingDirectory}\\event.macro";
 
         public void AddMacro(string key) {
@@ -79,6 +81,9 @@ namespace GUIBuilderProtoCSharp {
             try {
                 string oldKey = listBox1.SelectedItem.ToString();
                 string newKey = textBox1.Text;
+                if (oldKey == lastDoneMacroName) {
+                    lastDoneMacroName = newKey;
+                }
                 //if (listBox1.Items.Contains(newKey)) {
                 // 同じ名前のイベントマクロを含むとき
                 // RemoveMacro(oldKey);
@@ -240,6 +245,8 @@ namespace GUIBuilderProtoCSharp {
         private void Form6_FormClosing(object sender, FormClosingEventArgs e) {
             using (StreamWriter sw = new StreamWriter(FILE_NAME)) {
                 sw.Write(System.Text.Json.JsonSerializer.Serialize(macro, macro.GetType(), ProjectJson.options));
+                lastDoneMacro = macro[lastDoneMacroName];
+                Form1.f1.macroExecute = lastDoneMacro;
             }
         }
 
@@ -248,6 +255,9 @@ namespace GUIBuilderProtoCSharp {
             foreach (var item in listBox2.Items) {
                 Interpreter.EventList.Do(item.ToString());
             }
+            lastDoneMacroName = listBox1.SelectedItem.ToString();
+            lastDoneMacro = macro[lastDoneMacroName];
+            Form1.f1.macroExecute = lastDoneMacro;
         }
 
         private void listBox3_DoubleClick(object sender, EventArgs e) {

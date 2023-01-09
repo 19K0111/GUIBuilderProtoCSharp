@@ -94,6 +94,10 @@ namespace GUIBuilderProtoCSharp {
             try {
                 Interpreter.Lang.Compile(richTextBox1.Text); // 自作の構文解析器
                 // var result = await CSharpScript.EvaluateAsync(richTextBox1.Text, globals:Form1.f3); // Microsoft.CodeAnalysis.CSharp.Scriptingを使う
+                foreach (var item in Form1.f1.macroExecute) {
+                    Interpreter.EventList.Do(item);
+                }
+                Form1.f3.Focus();
             } catch (Exception ex) {
                 (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
             }
