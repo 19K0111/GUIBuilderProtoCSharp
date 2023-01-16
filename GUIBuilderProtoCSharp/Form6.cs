@@ -245,8 +245,10 @@ namespace GUIBuilderProtoCSharp {
         private void Form6_FormClosing(object sender, FormClosingEventArgs e) {
             using (StreamWriter sw = new StreamWriter(FILE_NAME)) {
                 sw.Write(System.Text.Json.JsonSerializer.Serialize(macro, macro.GetType(), ProjectJson.options));
-                lastDoneMacro = macro[lastDoneMacroName];
-                Form1.f1.macroExecute = lastDoneMacro;
+                try {
+                    lastDoneMacro = macro[lastDoneMacroName];
+                    Form1.f1.macroExecute = lastDoneMacro;
+                } catch (KeyNotFoundException) { }
             }
         }
 

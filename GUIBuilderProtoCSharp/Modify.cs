@@ -152,8 +152,13 @@ namespace GUIBuilderProtoCSharp {
                             List<object> op = new List<object> { op_code };
                             UserControl.Sync(m, op_code);
                             break;
-                        default:
+                        case UserCheckBox userCheckBox:
+                            UserCheckBox.Add(userCheckBox);
+                            userCheckBox.BringToFront();
+                            UserControl.Sync(m, op_code);
                             break;
+                        default:
+                            throw new NotImplementedException();
                     }
                     break;
                 case OperationCode.Modify:
@@ -166,8 +171,13 @@ namespace GUIBuilderProtoCSharp {
                             m.TargetForm.Controls.Remove((Control)m.TargetControl);
                             UserControl.Sync(m, op_code);
                             break;
-                        default:
+                        case UserCheckBox userCheckBox:
+                            UserCheckBox.Delete(userCheckBox);
+                            m.TargetForm.Controls.Remove((Control)m.TargetControl);
+                            UserControl.Sync(m, op_code);
                             break;
+                        default:
+                            throw new NotImplementedException();
                     }
                     //switch (m.ClassName) {
                     //    case "Button":

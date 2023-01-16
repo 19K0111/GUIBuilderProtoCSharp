@@ -27,6 +27,7 @@ namespace GUIBuilderProtoCSharp
                 try {
                     target.GetType().GetProperty(propName).SetValue(target, origin.GetType().GetProperty(propName).GetValue(origin));
                 }catch (ArgumentException) {
+                } catch (NullReferenceException) {
                 } 
             }
             return target;

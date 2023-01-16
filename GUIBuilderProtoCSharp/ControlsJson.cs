@@ -14,11 +14,15 @@ namespace GUIBuilderProtoCSharp {
 
         public object Tag { get; set; }
 
+        public bool AutoCheck { get; set; } // CheckBox
+
         public bool AutoEllipsis { get; set; }
 
         public bool Enabled { get; set; }
 
         public int TabIndex { get; set; }
+
+        public bool ThreeState { get; set; } // CheckBox
 
         public bool TabStop { get; set; }
 
@@ -44,11 +48,19 @@ namespace GUIBuilderProtoCSharp {
 
         public Size Size { get; set; }
 
+        public Appearance Appearance { get; set; } // CheckBox
+
         public Color BackColor { get; set; }
 
         public Image BackgroundImage { get; set; }
 
         public ImageLayout BackgroundImageLayout { get; set; }
+
+        public ContentAlignment CheckAlign { get; set; } // CheckBox
+
+        public bool Checked { get; set; } // CheckBox
+
+        public CheckState CheckState { get; set; } // CheckBox
 
         public Cursor Cursor { get; set; }
 

@@ -40,11 +40,11 @@ namespace GUIBuilderProtoCSharp {
             UserButton.Init();
         }
         public static Control? FindPreview(Control? design) {
-            if(design == null) { return null; }
+            if (design == null) { return null; }
             return Form1.f3.Controls.Find(design.Name, true)[0];
         }
         public static Control? FindDesign(Control preview) {
-            if(preview == null) { return null; }
+            if (preview == null) { return null; }
             return Form1.f2.Controls.Find(preview.Name, true)[0];
         }
 
@@ -111,6 +111,27 @@ namespace GUIBuilderProtoCSharp {
         }
         public static Type GetSelectedControlPreviewType() {
             return GetSelectedControlPreview().GetType();
+        }
+
+        public static string AvailableName(string name) {
+            // すでに同じ名前のコントロールのNameと衝突しないよう、コントロール作成時のNameを設定
+            string intName = "";
+            string typeName = "";
+            int intNameToInt = 0;
+            try {
+                intName = System.Text.RegularExpressions.Regex.Replace(name, @"[^0-9]", "");
+                typeName = name.Split(intName)[0];
+                intNameToInt = int.Parse(intName);
+            } catch (Exception) { }
+            if ((typeName + intName).GetHashCode() == name.GetHashCode()) {
+                try {
+                    if (Form1.f3.Controls.Find(name, true)[0].Name.GetHashCode() == name.GetHashCode()) {
+                        intNameToInt++;
+                        return AvailableName(typeName + intNameToInt.ToString());
+                    }
+                } catch (IndexOutOfRangeException) { }
+            }
+            return name;
         }
 
         internal static void UserControl_MouseDown(object sender, MouseEventArgs e) {
@@ -321,10 +342,12 @@ namespace GUIBuilderProtoCSharp {
                             break;
                         case UserCheckBox userCheckBox:
                             System.Diagnostics.Debug.WriteLine($"2: {userCheckBox.GetType().Name}");
-                            UserCheckBox.Count--;
+                            List<object> before2 = new List<object>() { userCheckBox.Index };
+                            Form1.undo.Push(new Modify(Modify.OperationCode.Delete, userCheckBox, userCheckBox.FindForm(), before2, before2));
+                            UserCheckBox.Delete(userCheckBox);
                             break;
                         default:
-                            break;
+                            throw new NotImplementedException();
                     }
                     Control previewControl = Form1.f3.Controls.Find(selecting.Name, true)[0];
                     Form1.f3.Controls.Remove(previewControl); // プレビューウィンドウのコントロールを削除
@@ -429,7 +452,7 @@ namespace GUIBuilderProtoCSharp {
             for (int i = 0; i <= UserButtons.Count; i++) {
                 // Nameが重複しないようにする処理
                 if (!nameManageList[i]) {
-                    this.Name = $"{GetType().BaseType.Name}{i + 1}";
+                    this.Name = UserControl.AvailableName($"{GetType().BaseType.Name}{i + 1}");
                     this.Text = this.Name;
                     break;
                 }
@@ -564,9 +587,9 @@ namespace GUIBuilderProtoCSharp {
 
         public static void UpdateNameManageList() {
             foreach (var item in UserButtons) {
-            try {
-                nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
-            } catch (Exception) { }
+                try {
+                    nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
+                } catch (Exception) { }
             }
         }
 
@@ -590,12 +613,14 @@ namespace GUIBuilderProtoCSharp {
         //    }
         //}
     }
-    internal class UserCheckBox : CheckBox {
-        static int num = 0;
+    internal partial class UserCheckBox : CheckBox {
+        // static int num = 0;
+        internal static List<UserCheckBox>? UserCheckBoxes = new();
+        private static bool[] nameManageList = new bool[UserControl.BUFFER];
 
         public UserCheckBox() {
             // コンストラクタ
-            this.Name = $"CheckBox{++Count}";
+            this.Name = $"{GetType().Name}0";
             this.Location = new Point(0, 0);
             this.Size = new Size(88, 19);
             this.TabIndex = 0;
@@ -604,16 +629,53 @@ namespace GUIBuilderProtoCSharp {
 
             this.MouseDown += UserControl.UserControl_MouseDown;
             this.MouseMove += UserControl.UserControl_MouseMove;
+            //this.MouseEnter += UserControl.UserControl_MouseEnter;
+            this.MouseLeave += UserControl.UserControl_MouseLeave;
+            this.MouseUp += UserControl.UserControl_MouseUp;
+            this.KeyDown += UserControl.UserControl_KeyDown;
+            this.PreviewKeyDown += UserControl.UserControl_PreviewKeyDown;
+            this.KeyUp += UserControl.UserControl_KeyUp;
+            this.Enter += UserControl.UserControl_Enter;
+            this.Leave += UserControl.UserControl_Leave;
+
+            for (int i = 0; i <= UserCheckBoxes.Count; i++) {
+                // Nameが重複しないようにする処理
+                if (!nameManageList[i]) {
+                    this.Name = UserControl.AvailableName($"{GetType().BaseType.Name}{i + 1}");
+                    this.Text = this.Name;
+                    break;
+                }
+            }
+            Add(this);
         }
 
         public UserCheckBox(UserCheckBox t) {
             // コピーコンストラクタ
-            this.Name = t.Name;
-            this.Location = t.Location;
-            this.Size = t.Size;
-            this.TabIndex = t.TabIndex;
-            this.Text = t.Text;
-            this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+            //this.Name = t.Name;
+            //this.Location = t.Location;
+            //this.Size = t.Size;
+            //this.TabIndex = t.TabIndex;
+            //this.Text = t.Text;
+            //this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+            PropertyCopier.ControlCopy(t, this);
+
+            this.Click += UserCheckBox_Click;
+        }
+
+        public static void Init() {
+            UserCheckBox.UserCheckBoxes?.Clear();
+            nameManageList = new bool[UserControl.BUFFER];
+            UserControl.UserControls.Add(UserCheckBox.UserCheckBoxes);
+        }
+
+        private void UserCheckBox_Click(object sender, EventArgs e) {
+            Console.WriteLine("Clicked: " + this.Name);
+            try {
+                // Interpreter.EventList.Do(this.Name + ".Click"); // CheckBox1.Clickを検索して呼び出す方法
+                Interpreter.EventList.Do(this.Name + "_Click"); // CheckBox1_Clickを検索して呼び出す方法　関数呼び出しに対応できる方法
+            } catch (Exception ex) {
+                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
+            }
         }
 
         /// <summary>
@@ -621,11 +683,71 @@ namespace GUIBuilderProtoCSharp {
         /// </summary>
         public static int Count {
             get {
-                return num;
+                return UserCheckBoxes.Count;
             }
-            set {
-                num = value;
+        }
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public int Index {
+            get {
+                return UserCheckBoxes.IndexOf(this);
+                //for (int i = 0; i < UserCheckBoxes.Count; i++) {
+                //    if (UserCheckBoxes[i].Name == Name) {
+                //        return i;
+                //    }
+                //}
+                //return -1;
+            }
+            private set {
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public string ControlTypeName {
+            get {
+                return this.GetType().Name;
+            }
+        }
+
+        public static void Delete(UserCheckBox d) {
+            //Count--;
+            foreach (var item in UserCheckBox.UserCheckBoxes) {
+                if (item != null && item.Name == d.Name) {
+                    // UserCheckBoxes[d.Index] = null;
+                    UserCheckBoxes.Remove(item);
+                    try {
+                        nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = false;
+                    } catch (Exception) { }
+                    break;
+                }
+            }
+        }
+
+        public static void Add(UserCheckBox d) {
+            UserCheckBoxes.Add(d);
+            try {
+                nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = true;
+            } catch (Exception) { }
+
+            //Count++;
+        }
+
+        public static void UpdateNameManageList() {
+            foreach (var item in UserCheckBoxes) {
+                try {
+                    nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
+                } catch (Exception) { }
             }
         }
     }
+
+    /* 
+     * 新たにGUI部品を定義するとき
+     * 1. UserControl.csにクラスを定義
+     * 2. Form1.csのCreateメソッドの対応する部分を編集
+     * 3. 一度実行して、配置してみる　PropertyGridに表示されているプロパティに注目
+     * 4. 必要に応じてPropertyGridに表示しないプロパティはUserControl.HideProperty.csに記述
+     * 5. シリアライズ、デシリアライズできていないプロパティについては、ControlsJson.csにそのプロパティを記述
+     * 6. Modify.csのOperateメソッドを編集
+     * 7. Form1.csのpropertyGrid1_PropertyValueChangedメソッドを編集
+     */
 }
