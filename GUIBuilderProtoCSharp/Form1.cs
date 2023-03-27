@@ -179,12 +179,21 @@ namespace GUIBuilderProtoCSharp {
                     UserCheckBoxes.Add(ucb);
                     ucb.BringToFront();
                     ucb2.BringToFront();
-                    ucb2.BringToFront();
                     List<object> before2 = new List<object>() { ucb.Index };
                     undo.Push(new Modify(Modify.OperationCode.Create, ucb, ucb.FindForm(), before2, before2));
                     break;
-                case "CheckedListBox":
+                case nameof(CheckedListBox):
                     NumCheckedListBox++;
+                    System.Diagnostics.Debug.WriteLine($"create CheckedListBox{UserCheckedListBox.Count + 1}");
+                    UserCheckedListBox ucl = new();
+                    f2.Controls.Add(ucl);
+                    UserCheckedListBox ucl2 = new(ucl);
+                    f3.Controls.Add(ucl2);
+                    UserCheckedListBoxes.Add(ucl);
+                    ucl.BringToFront();
+                    ucl2.BringToFront();
+                    List<object> before3 = new List<object> { ucl.Index };
+                    undo.Push(new Modify(Modify.OperationCode.Create, ucl, ucl.FindForm(), before3, before3));
                     break;
                 case "ComboBox":
                     NumComboBox++;
@@ -377,6 +386,8 @@ namespace GUIBuilderProtoCSharp {
                         c = new UserButton();
                     } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckBox)) {
                         c = new UserCheckBox();
+                    } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckedListBox)) {
+                        c = new UserCheckedListBox();
                     } else {
                         throw new NotImplementedException();
                     }
@@ -385,13 +396,24 @@ namespace GUIBuilderProtoCSharp {
                             string propName = typeof(ControlsJson).GetProperties()[j].Name;
                             var cjValue = dj.Controls[i].GetType().GetProperty(propName).GetValue(dj.Controls[i]);
                             c.GetType().GetProperty(propName).SetValue(c, cjValue);
-                        } catch (ArgumentException) { }
-                        catch(NullReferenceException) { }
+                        } catch (ArgumentException) { 
+                        } catch (NullReferenceException) { 
+                        } catch (System.Reflection.AmbiguousMatchException) {
+                            if (c.GetType().Name == nameof(UserCheckedListBox)) {
+                                string propName = typeof(ControlsJson).GetProperties()[j].Name;
+                                var cjValue = dj.Controls[i].GetType().GetProperty(propName).GetValue(dj.Controls[i]);
+                                for (int k = 0; k < ((CheckedListBox.ObjectCollection)cjValue).Count; k++) {
+                                    ((UserCheckedListBox)c).Items.Add(dj.Controls[i].Items[k]);
+                                }
+                            }
+                        }
                     }
                     if (dj.Controls[i].ControlTypeName == "UserButton") {
                         c2 = new UserButton((UserButton)c);
-                    } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckBox)){
+                    } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckBox)) {
                         c2 = new UserCheckBox((UserCheckBox)c);
+                    } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckedListBox)) {
+                        c2 = new UserCheckedListBox((UserCheckedListBox)c);
                     } else {
                         throw new NotImplementedException();
                     }
@@ -883,11 +905,13 @@ namespace GUIBuilderProtoCSharp {
                             if (duplicatedName.GetType() == typeof(UserButton)) {
                                 ((UserButton)duplicatedName).Name = e.OldValue.ToString();
                                 UserButton.UpdateNameManageList();
-                            }else if(duplicatedName.GetType() == typeof(UserCheckBox)) {
+                            } else if (duplicatedName.GetType() == typeof(UserCheckBox)) {
                                 ((UserCheckBox)duplicatedName).Name = e.OldValue.ToString();
                                 UserCheckBox.UpdateNameManageList();
-                            } 
-                            else {
+                            } else if (duplicatedName.GetType() == typeof(UserCheckedListBox)) {
+                                ((UserCheckedListBox)duplicatedName).Name = e.OldValue.ToString();
+                                UserCheckedListBox.UpdateNameManageList();
+                            } else {
                                 throw new NotImplementedException();
                             }
                             //((Control)((PropertyGrid)s).SelectedObject).Name = e.OldValue.ToString();
@@ -898,6 +922,8 @@ namespace GUIBuilderProtoCSharp {
                     }
                     property?.SetValue(f2.Controls.Find(e.OldValue.ToString(), true)[0], e.ChangedItem.Value);
                     Rename(e.OldValue.ToString(), ((Control)((PropertyGrid)s).SelectedObject).Name);
+                } else if (property?.Name == "Items") {
+                    // Itemsを変更してもこのイベントが呼び出されない
                 } else if (Array.IndexOf(UserControl.NOT_CHANGED_PROPERTY, property?.Name) != -1 /* property?.Name == "Enabled" || property?.Name == "Visible" */) {
                     // デザイン側と同期しないプロパティ
                     // これらのプロパティはデザイン側も変更すると部品を選択できない不都合がおこる

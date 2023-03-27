@@ -26,9 +26,16 @@ namespace GUIBuilderProtoCSharp
                 string propName = typeof(ControlsJson).GetProperties()[i].Name;
                 try {
                     target.GetType().GetProperty(propName).SetValue(target, origin.GetType().GetProperty(propName).GetValue(origin));
-                }catch (ArgumentException) {
+                } catch (ArgumentException) {
                 } catch (NullReferenceException) {
-                } 
+                } catch (System.Reflection.AmbiguousMatchException) {
+                    if (target.GetType().Name == nameof(UserCheckedListBox)) {
+                        var value = target.GetType().GetProperty(typeof(ControlsJson).GetProperties()[i].Name, typeof(CheckedListBox.ObjectCollection)).GetValue(origin);
+                        for (int j = 0; j < ((CheckedListBox.ObjectCollection)value).Count; j++) {
+                            ((UserCheckedListBox)(object)target).Items.Add(((CheckedListBox.ObjectCollection)value)[j]);
+                        }
+                    }
+                }
             }
             return target;
         }

@@ -12,13 +12,35 @@ namespace GUIBuilderProtoCSharp {
 
         public string Name { get; set; }
 
+        public CheckedListBox.ObjectCollection Items { get; set; } // CheckedListBox
+
         public object Tag { get; set; }
 
         public bool AutoCheck { get; set; } // CheckBox
 
         public bool AutoEllipsis { get; set; }
 
+        public bool CheckOnClick { get; set; } // CheckedListBox
+
+        public int ColumnWidth { get; set; } // CheckedListBox
+
         public bool Enabled { get; set; }
+
+        public int HorizontalExtent { get; set; } // CheckedListBox
+
+        public bool HorizontalScrollbar { get; set; } // CheckedListBox
+
+        public ImeMode ImeMode { get; set; } // CheckedListBox
+
+        public bool IntegralHeight { get; set; } // CheckedListBox
+
+        public bool MultiColumn { get; set; } // CheckedListBox
+
+        public bool ScrollAlwaysVisible { get; set; } // CheckedListBox
+
+        public SelectionMode SelectionMode { get; set; } // CheckedListBox
+
+        public bool Sorted { get; set; } // CheckedListBox
 
         public int TabIndex { get; set; }
 
@@ -56,6 +78,8 @@ namespace GUIBuilderProtoCSharp {
 
         public ImageLayout BackgroundImageLayout { get; set; }
 
+        public BorderStyle BorderStyle { get; set; } // CheckedListBox
+
         public ContentAlignment CheckAlign { get; set; } // CheckBox
 
         public bool Checked { get; set; } // CheckBox
@@ -81,6 +105,8 @@ namespace GUIBuilderProtoCSharp {
         public ContentAlignment TextAlign { get; set; }
 
         public TextImageRelation TextImageRelation { get; set; }
+
+        public bool ThreeDCheckBoxes { get; set; } // CheckedListBox
 
         public bool UseMnemonic { get; set; }
 

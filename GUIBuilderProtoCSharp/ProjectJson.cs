@@ -46,7 +46,7 @@ namespace GUIBuilderProtoCSharp {
             ReadCommentHandling = JsonCommentHandling.Skip,
             AllowTrailingCommas = true,
             Converters = {new CursorJsonConverter(), new PointJsonConverter(), new IconJsonConverter(), new BindingContextJsonConverter(), new FontJsonConverter(),
-                new WindowTargetJsonConverter(), new ColorJsonConverter(), new ImageJsonConverter()},
+                new WindowTargetJsonConverter(), new ColorJsonConverter(), new ImageJsonConverter(), new ItemsJsonConverter()},
         };
         internal static Newtonsoft.Json.JsonSerializerSettings newton_options = new Newtonsoft.Json.JsonSerializerSettings() {
             DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore, // 規定値プロパティを無視する

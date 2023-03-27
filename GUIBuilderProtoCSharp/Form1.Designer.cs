@@ -256,8 +256,8 @@
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editMenu,
             this.fileMenu,
+            this.editMenu,
             this.viewMenu,
             this.toolsMenu,
             this.windowsMenu,

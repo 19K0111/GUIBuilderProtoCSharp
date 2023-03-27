@@ -157,6 +157,11 @@ namespace GUIBuilderProtoCSharp {
                             userCheckBox.BringToFront();
                             UserControl.Sync(m, op_code);
                             break;
+                        case UserCheckedListBox userCheckedListBox:
+                            userCheckedListBox.Add();
+                            userCheckedListBox.BringToFront();
+                            UserControl.Sync(m, op_code);
+                            break;
                         default:
                             throw new NotImplementedException();
                     }
@@ -173,6 +178,11 @@ namespace GUIBuilderProtoCSharp {
                             break;
                         case UserCheckBox userCheckBox:
                             UserCheckBox.Delete(userCheckBox);
+                            m.TargetForm.Controls.Remove((Control)m.TargetControl);
+                            UserControl.Sync(m, op_code);
+                            break;
+                        case UserCheckedListBox userCheckedListBox:
+                            userCheckedListBox.Delete();
                             m.TargetForm.Controls.Remove((Control)m.TargetControl);
                             UserControl.Sync(m, op_code);
                             break;

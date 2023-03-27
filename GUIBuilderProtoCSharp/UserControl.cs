@@ -38,6 +38,7 @@ namespace GUIBuilderProtoCSharp {
             ctrl = false;
             selecting = null;
             UserButton.Init();
+            UserCheckBox.Init();
         }
         public static Control? FindPreview(Control? design) {
             if (design == null) { return null; }
@@ -740,14 +741,154 @@ namespace GUIBuilderProtoCSharp {
         }
     }
 
+    internal partial class UserCheckedListBox : CheckedListBox, IUserControl<UserCheckedListBox> {
+        // static int num = 0;
+        internal static List<UserCheckedListBox>? UserCheckedListBoxes = new();
+        private static bool[] nameManageList = new bool[UserControl.BUFFER];
+
+        public UserCheckedListBox() {
+            // コンストラクタ
+            this.Name = $"{GetType().Name}0";
+            this.Location = new Point(0, 0);
+            this.Size = new Size(120, 88);
+            this.TabIndex = 0;
+            this.Text = this.Name;
+
+            this.MouseDown += UserControl.UserControl_MouseDown;
+            this.MouseMove += UserControl.UserControl_MouseMove;
+            //this.MouseEnter += UserControl.UserControl_MouseEnter;
+            this.MouseLeave += UserControl.UserControl_MouseLeave;
+            this.MouseUp += UserControl.UserControl_MouseUp;
+            this.KeyDown += UserControl.UserControl_KeyDown;
+            this.PreviewKeyDown += UserControl.UserControl_PreviewKeyDown;
+            this.KeyUp += UserControl.UserControl_KeyUp;
+            this.Enter += UserControl.UserControl_Enter;
+            this.Leave += UserControl.UserControl_Leave;
+
+            for (int i = 0; i <= UserCheckedListBoxes.Count; i++) {
+                // Nameが重複しないようにする処理
+                if (!nameManageList[i]) {
+                    this.Name = UserControl.AvailableName($"{GetType().BaseType.Name}{i + 1}");
+                    this.Text = this.Name;
+                    break;
+                }
+            }
+            this.Add();
+        }
+
+        public UserCheckedListBox(UserCheckedListBox t) {
+            // コピーコンストラクタ
+            //this.Name = t.Name;
+            //this.Location = t.Location;
+            //this.Size = t.Size;
+            //this.TabIndex = t.TabIndex;
+            //this.Text = t.Text;
+            //this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+            PropertyCopier.ControlCopy(t, this);
+
+            this.Click += UserCheckedListBox_Click;
+        }
+
+        public void Init(ref List<UserCheckedListBox> l, ref bool[] nameManageList) {
+            l.Clear();
+            nameManageList = new bool[UserControl.BUFFER];
+            UserControl.UserControls.Add(UserCheckedListBox.UserCheckedListBoxes);
+            
+            //UserCheckedListBox.UserCheckedListBoxes?.Clear();
+            //nameManageList = new bool[UserControl.BUFFER];
+            //UserControl.UserControls.Add(UserCheckedListBox.UserCheckedListBoxes);
+        }
+
+        private void UserCheckedListBox_Click(object sender, EventArgs e) {
+            Console.WriteLine("Clicked: " + this.Name);
+            try {
+                // Interpreter.EventList.Do(this.Name + ".Click"); // CheckedListBox1.Clickを検索して呼び出す方法
+                Interpreter.EventList.Do(this.Name + "_Click"); // CheckedListBox1_Clickを検索して呼び出す方法　関数呼び出しに対応できる方法
+            } catch (Exception ex) {
+                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// デザインウィンドウに表示している個数
+        /// </summary>
+        public static int Count {
+            get {
+                return UserCheckedListBoxes.Count;
+            }
+        }
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public int Index {
+            get {
+                return UserCheckedListBoxes.IndexOf(this);
+                //for (int i = 0; i < UserCheckedListBoxes.Count; i++) {
+                //    if (UserCheckedListBoxes[i].Name == Name) {
+                //        return i;
+                //    }
+                //}
+                //return -1;
+            }
+            private set {
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public string ControlTypeName {
+            get {
+                return this.GetType().Name;
+            }
+        }
+
+        /*
+        public new List<string> Items {
+            get; set;
+        }
+        */
+
+        public void Delete() {
+            //Count--;
+            foreach (var item in UserCheckedListBox.UserCheckedListBoxes) {
+                if (item != null && item.Name == this.Name) {
+                    // UserCheckedListBoxes[d.Index] = null;
+                    UserCheckedListBoxes.Remove(item);
+                    try {
+                        nameManageList[int.Parse(this.Name.Replace(this.GetType().BaseType.Name, "")) - 1] = false;
+                    } catch (Exception) { }
+                    break;
+                }
+            }
+        }
+
+        public void Add() {
+            UserCheckedListBoxes.Add(this);
+            try {
+                nameManageList[int.Parse(this.Name.Replace(this.GetType().BaseType.Name, "")) - 1] = true;
+            } catch (Exception) { }
+
+            //Count++;
+        }
+
+        public static void UpdateNameManageList() {
+            foreach (var item in UserCheckedListBoxes) {
+                try {
+                    nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
+                } catch (Exception) { }
+            }
+        }
+        
+    }
+
     /* 
      * 新たにGUI部品を定義するとき
-     * 1. UserControl.csにクラスを定義
-     * 2. Form1.csのCreateメソッドの対応する部分を編集
-     * 3. 一度実行して、配置してみる　PropertyGridに表示されているプロパティに注目
-     * 4. 必要に応じてPropertyGridに表示しないプロパティはUserControl.HideProperty.csに記述
-     * 5. シリアライズ、デシリアライズできていないプロパティについては、ControlsJson.csにそのプロパティを記述
-     * 6. Modify.csのOperateメソッドを編集
-     * 7. Form1.csのpropertyGrid1_PropertyValueChangedメソッドを編集
+     * 01. UserControl.csにクラスを定義
+     * 02. UserControl.csのUserControlクラスのInitメソッドにUser[Component] Init()を追加
+     * 03. Form1.csのCreateメソッドの対応する部分を編集
+     * 04. 一度実行して、配置してみる　PropertyGridに表示されているプロパティに注目
+     * 05. 必要に応じてPropertyGridに表示しないプロパティはUserControl.HideProperty.csに記述
+     * 06. シリアライズ、デシリアライズできていないプロパティについては、ControlsJson.csにそのプロパティを記述
+     * 07. 必要に応じてCustomJsonConverter.csにJSON読み込み、書き出しの際の処理を記述してProjectJson.csのフィールドConvertersに追加
+     * 08. Modify.csのOperateメソッドを編集
+     * 09. Form1.csのpropertyGrid1_PropertyValueChangedメソッドを編集
+     * 10. Form1.csのLoadDesignメソッドを編集
      */
 }

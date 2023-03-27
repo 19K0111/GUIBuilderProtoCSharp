@@ -1281,13 +1281,28 @@ namespace Interpreter {
                 "System","System.Dynamic", "System.Linq", "System.Text","System.IO", "System.Collections.Generic", "System.Data", "System.Windows.Forms", "System.Drawing"
             };
             string code = "";
+            code += $"public void __ConvType__(ref Control ident){{\n" +
+                $"if(ident is Button){{ ident = (Button)ident;Console.WriteLine(ident+\" is Button\");}}\n" +
+                $"else if(ident is CheckBox){{ ident = (CheckBox)ident;Console.WriteLine(\"CheckBox\");}}\n" +
+                $"else if(ident is CheckedListBox){{ ident = (CheckedListBox)ident;Console.WriteLine(\"CheckedListBox\");}}\n" +
+                $"else if(ident is ComboBox){{ ident = (ComboBox)ident;Console.WriteLine(\"ComboBox\");}}\n" +
+                $"else if(ident is DateTimePicker){{ ident = (DateTimePicker)ident;Console.WriteLine(\"DateTimePicker\");}}\n" +
+                $"else if(ident is Label){{ ident = (Label)ident;Console.WriteLine(\"Label\");}}\n" +
+                $"else if(ident is ListBox){{ ident = (ListBox)ident;Console.WriteLine(\"ListBox\");}}\n" +
+                $"else if(ident is PictureBox){{ ident = (PictureBox)ident;Console.WriteLine(\"PictureBox\");}}\n" +
+                $"else if(ident is ProgressBar){{ ident = (ProgressBar)ident;Console.WriteLine(\"ProgressBar\");}}\n" +
+                $"else if(ident is RadioButton){{ ident = (RadioButton)ident;Console.WriteLine(\"RadioButton\");}}\n" +
+                $"else if(ident is RichTextBox){{ ident = (RichTextBox)ident;Console.WriteLine(\"RichTextBox\");}}\n" +
+                $"else if(ident is TextBox){{ ident = (TextBox)ident;Console.WriteLine(\"TextBox\");}}\n" +
+                $"else{{Console.WriteLine(\"else \"+ident.GetType());}}" +
+                $"}}\n";
             foreach (var item in Lang.eventList) {
                 if (item.Name == name) {
                     try {
                         foreach (Control control in GUIBuilderProtoCSharp.Form1.f3.Controls) {
                             System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(item.OriginalCode, @$"{control.Name}[.]");
                             // item.OriginalCode = item.OriginalCode.Replace(match.Value, $"Controls.Find(\"{match.Value.Replace(".", "")}\", true)[0].");
-                            code += $"var {control.Name} = Controls.Find(\"{control.Name}\", true)[0];\n";
+                            code += $"var {control.Name} = Controls.Find(\"{control.Name}\", true)[0];\n__ConvType__(ref {control.Name});\n";
                         }
                         code += $"{item.OriginalCode}\n{name}();";
                         Console.WriteLine($"[Script]--------------------\n{code}\n--------------------");

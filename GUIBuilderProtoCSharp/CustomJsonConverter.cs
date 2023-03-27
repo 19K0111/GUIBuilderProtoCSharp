@@ -56,7 +56,11 @@ namespace GUIBuilderProtoCSharp {
     public class IconJsonConverter : JsonConverter<Icon> {
         static int count = 0;
         public override Icon? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-            return new Icon(reader.GetString());
+            try {
+                return new Icon(reader.GetString());
+            } catch (FileNotFoundException) {
+                return new Form().Icon;
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, Icon value, JsonSerializerOptions options) {
@@ -163,6 +167,35 @@ namespace GUIBuilderProtoCSharp {
             value.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
             fs.Close();
             writer.WriteStringValue(fileName);
+        }
+    }
+
+    public class ItemsJsonConverter : JsonConverter<CheckedListBox.ObjectCollection> {
+        public override CheckedListBox.ObjectCollection? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+            CheckedListBox checkedListBox = new();
+            CheckedListBox.ObjectCollection objectCollection = checkedListBox.Items;
+            while (reader.Read()) {
+                switch (reader.TokenType) {
+                    case JsonTokenType.Comment:
+                        break;
+                    case JsonTokenType.StartArray:
+                        break;
+                    case JsonTokenType.EndArray:
+                        return objectCollection;
+                    case JsonTokenType.String:
+                        objectCollection.Add(reader.GetString());
+                        System.Diagnostics.Debug.WriteLine("CheckedListBox.ObjectCollection Read");
+                        break;
+                    case JsonTokenType.EndObject:
+                        break;
+                }
+            }
+            throw new JsonException("JSONオブジェクトの終了タグが見つかりませんでした");
+        }
+
+        public override void Write(Utf8JsonWriter writer, CheckedListBox.ObjectCollection value, JsonSerializerOptions options) {
+            writer.WriteStringValue("abcde"/*value.ToString()*/);
+            System.Diagnostics.Debug.WriteLine("CheckedListBox.ObjectCollection Write");
         }
     }
 }
