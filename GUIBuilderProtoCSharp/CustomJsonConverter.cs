@@ -198,4 +198,33 @@ namespace GUIBuilderProtoCSharp {
             System.Diagnostics.Debug.WriteLine("CheckedListBox.ObjectCollection Write");
         }
     }
+
+    public class ComboBoxItemsJsonConverter : JsonConverter<ComboBox.ObjectCollection> {
+        public override ComboBox.ObjectCollection? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+            ComboBox ComboBox = new();
+            ComboBox.ObjectCollection objectCollection = ComboBox.Items;
+            while (reader.Read()) {
+                switch (reader.TokenType) {
+                    case JsonTokenType.Comment:
+                        break;
+                    case JsonTokenType.StartArray:
+                        break;
+                    case JsonTokenType.EndArray:
+                        return objectCollection;
+                    case JsonTokenType.String:
+                        objectCollection.Add(reader.GetString());
+                        System.Diagnostics.Debug.WriteLine("ComboBox.ObjectCollection Read");
+                        break;
+                    case JsonTokenType.EndObject:
+                        break;
+                }
+            }
+            throw new JsonException("JSONオブジェクトの終了タグが見つかりませんでした");
+        }
+
+        public override void Write(Utf8JsonWriter writer, ComboBox.ObjectCollection value, JsonSerializerOptions options) {
+            writer.WriteStringValue("abcde"/*value.ToString()*/);
+            System.Diagnostics.Debug.WriteLine("ComboBox.ObjectCollection Write");
+        }
+    }
 }

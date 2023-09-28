@@ -195,8 +195,18 @@ namespace GUIBuilderProtoCSharp {
                     List<object> before3 = new List<object> { ucl.Index };
                     undo.Push(new Modify(Modify.OperationCode.Create, ucl, ucl.FindForm(), before3, before3));
                     break;
-                case "ComboBox":
+                case nameof(ComboBox):
                     NumComboBox++;
+                    System.Diagnostics.Debug.WriteLine($"create ComboBox{UserComboBox.Count + 1}");
+                    UserComboBox ucmb = new();
+                    f2.Controls.Add(ucmb);
+                    UserComboBox ucmb2 = new(ucmb);
+                    f3.Controls.Add(ucmb2);
+                    UserComboBoxes.Add(ucmb);
+                    ucmb.BringToFront();
+                    ucmb2.BringToFront();
+                    List<object> before4 = new List<object> { ucmb.Index };
+                    undo.Push(new Modify(Modify.OperationCode.Create, ucmb, ucmb.FindForm(), before4, before4));
                     break;
                 case "DateTimePicker":
                     NumDateTimePicker++;
@@ -297,6 +307,9 @@ namespace GUIBuilderProtoCSharp {
             for (int i = f2.Controls.Count - 1; i >= 0; i--) {
                 System.Diagnostics.Debug.WriteLine(Form1.f2.Controls[i].ToString());
                 ControlsJson cj = new ControlsJson();
+                // Enable, Visibleを一時的にプレビューと同じにする
+                f2.Controls[i].Enabled = f3.Controls.Find(f2.Controls[i].Name, true)[0].Enabled;
+                f2.Controls[i].Visible = f3.Controls.Find(f2.Controls[i].Name, true)[0].Visible;
                 //ControlsJson cj = new ControlsJson() {
                 //    ControlTypeName= f2.Controls[i].GetType().Name,
                 //    Name = f2.Controls[i].Name,
@@ -334,9 +347,13 @@ namespace GUIBuilderProtoCSharp {
             }
             StreamWriter sw = new StreamWriter(workingDirectory + "\\" + pj.Name[0] + GUIBuilderExtensions.Design);
             // sw.Write(System.Text.Json.JsonSerializer.Serialize(dj, ProjectJson.options));
-            sw.Write(System.Text.Json.JsonSerializer.Serialize(f3, f3.GetType(), ProjectJson.options)); // FormクラスをSystem.Text.Jsonでシリアライズ
+            sw.Write(System.Text.Json.JsonSerializer.Serialize(f2, f2.GetType(), ProjectJson.options)); // FormクラスをSystem.Text.Jsonでシリアライズ
             //sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(f3,Newtonsoft.Json.Formatting.Indented, ProjectJson.newton_options)); // FormクラスをNewtonsoft.Jsonでシリアライズ
             sw.Close();
+            for (int i = f2.Controls.Count - 1; i >= 0; i--) { 
+                f2.Controls[i].Enabled = true;
+                f2.Controls[i].Visible = true;
+            }
         }
 
         private void reloadToolStripButton_Click(object sender, EventArgs e) {
@@ -388,6 +405,8 @@ namespace GUIBuilderProtoCSharp {
                         c = new UserCheckBox();
                     } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckedListBox)) {
                         c = new UserCheckedListBox();
+                    } else if (dj.Controls[i].ControlTypeName == nameof(UserComboBox)) {
+                        c = new UserComboBox();
                     } else {
                         throw new NotImplementedException();
                     }
@@ -414,6 +433,8 @@ namespace GUIBuilderProtoCSharp {
                         c2 = new UserCheckBox((UserCheckBox)c);
                     } else if (dj.Controls[i].ControlTypeName == nameof(UserCheckedListBox)) {
                         c2 = new UserCheckedListBox((UserCheckedListBox)c);
+                    } else if (dj.Controls[i].ControlTypeName == nameof(UserComboBox)) {
+                        c2 = new UserComboBox((UserComboBox)c);
                     } else {
                         throw new NotImplementedException();
                     }
@@ -829,7 +850,7 @@ namespace GUIBuilderProtoCSharp {
             SetValueFromListBox(control, property, Convert.ChangeType(value, property.PropertyType));
         }
 
-        public void Rename(string oldName, string newName) {
+        public async void Rename(string oldName, string newName) {
             // Nameを変更した際にテキストエディタの識別子も変更する
             if (pj.UseBlockCode) {
                 string code = "";
@@ -856,6 +877,11 @@ namespace GUIBuilderProtoCSharp {
                 System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(f4.richTextBox1.Text, @$"{oldName}[.]");
                 if (match.Length > 0) {
                     f4.richTextBox1.Text = f4.richTextBox1.Text.Replace(match.Value, $"{newName}.");
+                    string code = f4.richTextBox1.Text;
+                    code = code.Replace("\n", "\\n");
+                    code = code.Replace("\"", "\\\"");
+                    code = code.Replace("\'", "\\\'");
+                    await f4.webView21.ExecuteScriptAsync($"setValue(\'{code}\')");
                 }
             }
             try {

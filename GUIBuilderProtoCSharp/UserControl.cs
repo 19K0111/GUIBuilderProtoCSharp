@@ -347,6 +347,18 @@ namespace GUIBuilderProtoCSharp {
                             Form1.undo.Push(new Modify(Modify.OperationCode.Delete, userCheckBox, userCheckBox.FindForm(), before2, before2));
                             UserCheckBox.Delete(userCheckBox);
                             break;
+                        case UserCheckedListBox userCheckedListBox:
+                            System.Diagnostics.Debug.WriteLine($"2: {userCheckedListBox.GetType().Name}");
+                            List<object> before3 = new List<object>() { userCheckedListBox.Index };
+                            Form1.undo.Push(new Modify(Modify.OperationCode.Delete, userCheckedListBox, userCheckedListBox.FindForm(), before3, before3));
+                            UserCheckedListBox.Delete(userCheckedListBox);
+                            break;
+                        case UserComboBox userComboBox:
+                            System.Diagnostics.Debug.WriteLine($"2: {userComboBox.GetType().Name}");
+                            List<object> before4 = new List<object>() { userComboBox.Index };
+                            Form1.undo.Push(new Modify(Modify.OperationCode.Delete, userComboBox, userComboBox.FindForm(), before4, before4));
+                            UserComboBox.Delete(userComboBox);
+                            break;
                         default:
                             throw new NotImplementedException();
                     }
@@ -741,7 +753,7 @@ namespace GUIBuilderProtoCSharp {
         }
     }
 
-    internal partial class UserCheckedListBox : CheckedListBox, IUserControl<UserCheckedListBox> {
+    internal partial class UserCheckedListBox : CheckedListBox/*, IUserControl<UserCheckedListBox>*/ {
         // static int num = 0;
         internal static List<UserCheckedListBox>? UserCheckedListBoxes = new();
         private static bool[] nameManageList = new bool[UserControl.BUFFER];
@@ -773,7 +785,7 @@ namespace GUIBuilderProtoCSharp {
                     break;
                 }
             }
-            this.Add();
+            Add(this);
         }
 
         public UserCheckedListBox(UserCheckedListBox t) {
@@ -845,24 +857,24 @@ namespace GUIBuilderProtoCSharp {
         }
         */
 
-        public void Delete() {
+        public static void Delete(UserCheckedListBox d) {
             //Count--;
             foreach (var item in UserCheckedListBox.UserCheckedListBoxes) {
-                if (item != null && item.Name == this.Name) {
+                if (item != null && item.Name == d.Name) {
                     // UserCheckedListBoxes[d.Index] = null;
                     UserCheckedListBoxes.Remove(item);
                     try {
-                        nameManageList[int.Parse(this.Name.Replace(this.GetType().BaseType.Name, "")) - 1] = false;
+                        nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = false;
                     } catch (Exception) { }
                     break;
                 }
             }
         }
 
-        public void Add() {
-            UserCheckedListBoxes.Add(this);
+        public static void Add(UserCheckedListBox d) {
+            UserCheckedListBoxes.Add(d);
             try {
-                nameManageList[int.Parse(this.Name.Replace(this.GetType().BaseType.Name, "")) - 1] = true;
+                nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = true;
             } catch (Exception) { }
 
             //Count++;
@@ -870,6 +882,143 @@ namespace GUIBuilderProtoCSharp {
 
         public static void UpdateNameManageList() {
             foreach (var item in UserCheckedListBoxes) {
+                try {
+                    nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
+                } catch (Exception) { }
+            }
+        }
+        
+    }
+
+    internal partial class UserComboBox : ComboBox/*, IUserControl<UserComboBox>*/ {
+        // static int num = 0;
+        internal static List<UserComboBox>? UserComboBoxes = new();
+        private static bool[] nameManageList = new bool[UserControl.BUFFER];
+
+        public UserComboBox() {
+            // コンストラクタ
+            this.Name = $"{GetType().Name}0";
+            this.Location = new Point(0, 0);
+            this.Size = new Size(120, 88);
+            this.TabIndex = 0;
+            this.Text = this.Name;
+
+            this.MouseDown += UserControl.UserControl_MouseDown;
+            this.MouseMove += UserControl.UserControl_MouseMove;
+            //this.MouseEnter += UserControl.UserControl_MouseEnter;
+            this.MouseLeave += UserControl.UserControl_MouseLeave;
+            this.MouseUp += UserControl.UserControl_MouseUp;
+            this.KeyDown += UserControl.UserControl_KeyDown;
+            this.PreviewKeyDown += UserControl.UserControl_PreviewKeyDown;
+            this.KeyUp += UserControl.UserControl_KeyUp;
+            this.Enter += UserControl.UserControl_Enter;
+            this.Leave += UserControl.UserControl_Leave;
+
+            for (int i = 0; i <= UserComboBoxes.Count; i++) {
+                // Nameが重複しないようにする処理
+                if (!nameManageList[i]) {
+                    this.Name = UserControl.AvailableName($"{GetType().BaseType.Name}{i + 1}");
+                    this.Text = this.Name;
+                    break;
+                }
+            }
+            Add(this);
+        }
+
+        public UserComboBox(UserComboBox t) {
+            // コピーコンストラクタ
+            //this.Name = t.Name;
+            //this.Location = t.Location;
+            //this.Size = t.Size;
+            //this.TabIndex = t.TabIndex;
+            //this.Text = t.Text;
+            //this.UseVisualStyleBackColor = t.UseVisualStyleBackColor;
+            PropertyCopier.ControlCopy(t, this);
+
+            this.Click += UserComboBox_Click;
+        }
+
+        public void Init(ref List<UserComboBox> l, ref bool[] nameManageList) {
+            l.Clear();
+            nameManageList = new bool[UserControl.BUFFER];
+            UserControl.UserControls.Add(UserComboBox.UserComboBoxes);
+            
+            //UserComboBox.UserComboBoxes?.Clear();
+            //nameManageList = new bool[UserControl.BUFFER];
+            //UserControl.UserControls.Add(UserComboBox.UserComboBoxes);
+        }
+
+        private void UserComboBox_Click(object sender, EventArgs e) {
+            Console.WriteLine("Clicked: " + this.Name);
+            try {
+                // Interpreter.EventList.Do(this.Name + ".Click"); // ComboBox1.Clickを検索して呼び出す方法
+                Interpreter.EventList.Do(this.Name + "_Click"); // ComboBox1_Clickを検索して呼び出す方法　関数呼び出しに対応できる方法
+            } catch (Exception ex) {
+                (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// デザインウィンドウに表示している個数
+        /// </summary>
+        public static int Count {
+            get {
+                return UserComboBoxes.Count;
+            }
+        }
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public int Index {
+            get {
+                return UserComboBoxes.IndexOf(this);
+                //for (int i = 0; i < UserComboBoxes.Count; i++) {
+                //    if (UserComboBoxes[i].Name == Name) {
+                //        return i;
+                //    }
+                //}
+                //return -1;
+            }
+            private set {
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+        public string ControlTypeName {
+            get {
+                return this.GetType().Name;
+            }
+        }
+
+        /*
+        public new List<string> Items {
+            get; set;
+        }
+        */
+
+        public static void Delete(UserComboBox d) {
+            //Count--;
+            foreach (var item in UserComboBox.UserComboBoxes) {
+                if (item != null && item.Name == d.Name) {
+                    // UserComboBoxes[d.Index] = null;
+                    UserComboBoxes.Remove(item);
+                    try {
+                        nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = false;
+                    } catch (Exception) { }
+                    break;
+                }
+            }
+        }
+
+        public static void Add(UserComboBox d) {
+            UserComboBoxes.Add(d);
+            try {
+                nameManageList[int.Parse(d.Name.Replace(d.GetType().BaseType.Name, "")) - 1] = true;
+            } catch (Exception) { }
+
+            //Count++;
+        }
+
+        public static void UpdateNameManageList() {
+            foreach (var item in UserComboBoxes) {
                 try {
                     nameManageList[int.Parse(item.Name.Replace(item.GetType().BaseType.Name, "")) - 1] = true;
                 } catch (Exception) { }

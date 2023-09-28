@@ -48,10 +48,15 @@ namespace GUIBuilderProtoCSharp {
 
         }
 
-        private void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {
+        private async void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {
+            string code = e.TryGetWebMessageAsString();
             Form1.f4.richTextBox1.Enabled = false;
             Form1.f4.編集を有効化EToolStripMenuItem.Checked = false;
-            Form1.f4.richTextBox1.Text = e.TryGetWebMessageAsString();
+            Form1.f4.richTextBox1.Text = code;
+            code = code.Replace("\n", "\\n");
+            code = code.Replace("\"", "\\\"");
+            code = code.Replace("\'", "\\\'");
+            await Form1.f4.webView21.ExecuteScriptAsync($"setValue(\'{code}\');");
             Form1.f4.richTextBox1_TextChanged(sender, null);
         }
 

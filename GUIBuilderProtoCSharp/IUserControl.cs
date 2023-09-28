@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GUIBuilderProtoCSharp {
     internal interface IUserControl<T> {
+        // staticが使えない
         public abstract void Init(ref List<T> l, ref bool[] nameManageList);
 
         public abstract void Add();

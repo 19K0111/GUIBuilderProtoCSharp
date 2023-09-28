@@ -13,6 +13,9 @@ namespace GUIBuilderProtoCSharp {
         static string fileDetail = "";
         char pressedKey;
         bool highlightFlag;
+
+        string hostName = "19k0111.gui-builder.jp";
+
         public Form4() {
             InitializeComponent();
             // RichTextBoxでフォントが勝手に変わらないための処置
@@ -85,13 +88,19 @@ namespace GUIBuilderProtoCSharp {
             IsChanged();
         }
 
-        protected internal void richTextBox1_TextChanged(object sender, EventArgs e) {
+        protected internal async void richTextBox1_TextChanged(object sender, EventArgs e) {
             undoToolStripMenuItem.Enabled = true;
             redoToolStripMenuItem.Enabled = false;
             Text = fileName + "* - " + Form1.CODE_EDITOR;
             (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = "";
             IsChanged();
             try {
+                string code = richTextBox1.Text;
+                code = code.Replace("\n", "\\n");
+                code = code.Replace("\"", "\\\"");
+                code = code.Replace("\'", "\\\'");
+
+                await Form1.f4.webView21.ExecuteScriptAsync($"setValue(\'{code}\');");
                 Interpreter.Lang.Compile(richTextBox1.Text); // 自作の構文解析器
                 // var result = await CSharpScript.EvaluateAsync(richTextBox1.Text, globals:Form1.f3); // Microsoft.CodeAnalysis.CSharp.Scriptingを使う
                 foreach (var item in Form1.f1.macroExecute) {
@@ -101,8 +110,8 @@ namespace GUIBuilderProtoCSharp {
             } catch (Exception ex) {
                 (Form1.consoleForm.Controls.Find("debug", true)[0]).Text = ex.Message;
             }
-            timer1.Stop();
-            timer1.Start();
+            //timer1.Stop();
+            //timer1.Start();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -123,11 +132,16 @@ namespace GUIBuilderProtoCSharp {
             }
         }
 
-        public void Open(string fn) {
+        public async void Open(string fn) {
                 using (StreamReader sr = new StreamReader(fn, Encoding.UTF8)) {
                     fileDetail = sr.ReadToEnd();
                     richTextBox1.Text = fileDetail;
-                }
+
+                fileDetail = fileDetail.Replace("\n", "");
+                fileDetail = fileDetail.Replace("\"", "\\\"");
+                fileDetail = fileDetail.Replace("\'", "\\\'");
+                await webView21.ExecuteScriptAsync($"setValue(\'{fileDetail}\')");
+            }
                 fileName = fn;
                 saveFileDialog1.FileName = fn;
                 Text = fn + " - " + Form1.CODE_EDITOR;
@@ -254,5 +268,23 @@ namespace GUIBuilderProtoCSharp {
             編集を有効化EToolStripMenuItem.Enabled = Form1.pj.UseBlockCode;
         }
 
+        private void Form4_Load(object sender, EventArgs e) {
+            InitializeAsync();
+        }
+
+        public async Task InitializeAsync() {
+            await webView21.EnsureCoreWebView2Async(null);
+            // ../bin/debug/内の指定したフォルダに仮想ドメインを割り当てる
+            webView21.CoreWebView2.SetVirtualHostNameToFolderMapping(hostName, "monaco-editor", Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
+            webView21.CoreWebView2.Navigate($"https://{hostName}/index.html");
+            webView21.CoreWebView2.WebMessageReceived += webView21_WebMessageReceived;
+            await Task.Delay(500);
+        }
+        private void webView21_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) {
+            Form1.f4.richTextBox1.Enabled = false;
+            Form1.f4.編集を有効化EToolStripMenuItem.Checked = false;
+            Form1.f4.richTextBox1.Text = e.TryGetWebMessageAsString();
+            Form1.f4.richTextBox1_TextChanged(sender, null);
+        }
     }
 }

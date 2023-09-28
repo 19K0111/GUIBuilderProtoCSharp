@@ -158,8 +158,13 @@ namespace GUIBuilderProtoCSharp {
                             UserControl.Sync(m, op_code);
                             break;
                         case UserCheckedListBox userCheckedListBox:
-                            userCheckedListBox.Add();
+                            UserCheckedListBox.Add(userCheckedListBox);
                             userCheckedListBox.BringToFront();
+                            UserControl.Sync(m, op_code);
+                            break;
+                        case UserComboBox userComboBox:
+                            UserComboBox.Add(userComboBox);
+                            userComboBox.BringToFront();
                             UserControl.Sync(m, op_code);
                             break;
                         default:
@@ -182,7 +187,12 @@ namespace GUIBuilderProtoCSharp {
                             UserControl.Sync(m, op_code);
                             break;
                         case UserCheckedListBox userCheckedListBox:
-                            userCheckedListBox.Delete();
+                            UserCheckedListBox.Delete(userCheckedListBox);
+                            m.TargetForm.Controls.Remove((Control)m.TargetControl);
+                            UserControl.Sync(m, op_code);
+                            break;
+                        case UserComboBox userComboBox:
+                            UserComboBox.Delete(userComboBox);
                             m.TargetForm.Controls.Remove((Control)m.TargetControl);
                             UserControl.Sync(m, op_code);
                             break;

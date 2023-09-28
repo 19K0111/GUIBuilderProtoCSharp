@@ -1,0 +1,9 @@
+﻿TODO
+	CheckedListBoxの復元
+	ComboBoxに対応させる
+	Google Blocklyに移行するならブロックの生成
+	Click以外のイベントに対応させる
+	インタプリタの速度を向上させたい
+
+
+

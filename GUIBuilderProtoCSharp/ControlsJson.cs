@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GUIBuilderProtoCSharp {
-    internal class ControlsJson {
+    internal partial class ControlsJson {
         public string ControlTypeName { get; set; }
 
         public int Index { get; set; }
@@ -226,5 +226,10 @@ namespace GUIBuilderProtoCSharp {
         //public int Width {
         //    get; set;
         //}
+    }
+
+    internal partial class ControlsJson {
+        // Combobox
+        // public ComboBox.ObjectCollection Items { get; set; }
     }
 }
