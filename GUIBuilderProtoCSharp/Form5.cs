@@ -57,7 +57,7 @@ namespace GUIBuilderProtoCSharp {
             code = code.Replace("\"", "\\\"");
             code = code.Replace("\'", "\\\'");
             await Form1.f4.webView21.ExecuteScriptAsync($"setValue(\'{code}\');");
-            Form1.f4.richTextBox1_TextChanged(sender, null);
+            // Form1.f4.richTextBox1_TextChanged(sender, null);
         }
 
         private void Form5_FormClosing(object sender, FormClosingEventArgs e) {
